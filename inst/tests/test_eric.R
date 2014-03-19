@@ -56,9 +56,27 @@ test_that("The with-gsi case gives expected results on short analysis of test da
   cons_arg <- basic_args
   cons_arg$reset_booty_seed <- 0
   cons_arg$BLFILE <- file.path(test_data_dir, "sthd_base_v3_187.txt")
+  cons_arg$DO_GSI_ON_PROP <- T
+  cons_arg$GSI_SEEDS <- c(1234, 5678) 
   gsi_stock_result15 <- do.call(run_boot_gsi_analysis, args=cons_arg)
   
   expect_that(gsi_stock_result15, is_identical_to(lg_test_data$gsi_stock_result15))
+})
+
+
+test_that("GSI with different seeds gives different results", {
+  set.seed(15)
+  cons_arg <- basic_args
+  cons_arg$reset_booty_seed <- 0
+  cons_arg$BLFILE <- file.path(test_data_dir, "sthd_base_v3_187.txt")
+  cons_arg$DO_GSI_ON_PROP <- T
+  cons_arg$GSI_SEEDS <- c(1234, 5678) 
+  gsi_stock_result_a <- do.call(run_boot_gsi_analysis, args=cons_arg)
+  
+  cons_arg$GSI_SEEDS <- c(765, 987) 
+  gsi_stock_result_b <- do.call(run_boot_gsi_analysis, args=cons_arg)
+  
+  expect_that(identical(gsi_stock_result_a, gsi_stock_result_b), is_false())
 })
 
 
