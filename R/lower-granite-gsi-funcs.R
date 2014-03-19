@@ -128,7 +128,7 @@ gsi_ize_the_Sim.List <- function(Sim.List, ru.list, GSISIM, BLFILE, Originnames,
   # note that if we wanted to condense on the fly in unix we could pipe it through this:
   # awk '/^MULTI_FIX_MIX_MIXFISH_NAMES_HEADER:/ && got_it==0 {print; got_it=1; fields=NF} /^MULTI_FIX_MIX_MIXED_FISH_INDIVS:/ {for(i=1;i<=fields;i++) printf("%s ", $i); printf("\n")}'
   # but for the PC folks, we will just do all this in R.  It is a little slower but not too bad
-  gsi.big.out <- system2(GSISIM, args=gsi.args, stdout=T)
+  suppressWarnings(gsi.big.out <- system2(GSISIM, args=gsi.args, stdout=T))  # suppressing warnings about chopping long lines. See notes.
 
 
   # now extract the gsi simulation results:

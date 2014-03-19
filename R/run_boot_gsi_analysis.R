@@ -53,23 +53,15 @@
 #' itself.  It is odd and vexing.  Anyway, in order to test that comparable results are obtained with
 #' the super-informo gsi data, we have this.  It should be an integer.  If >0 then it will be passed
 #' to \code{\link{set.seed()}} after the gsi code has been run (before entering the bootstrap loop.)
+#' For an example of its use, see the test files.  
 #' @export
 #' @examples 
 #' # Do a very short run with known stock of origin:
 #' set.seed(5)
-#' known_stock_result <- run_boot_gsi_analysis(nsim=40, B=500, DO_GSI_ON_PROP = F)
+#' known_stock_result1 <- run_boot_gsi_analysis(nsim=10, B=50, DO_GSI_ON_PROP = F)
 #' 
-#' # do the same with gsi_assignments from super-informative data 
-#' set.seed(5)
-#' super_informo_gsi_result <- run_boot_gsi_analysis(nsim=40, B=500, DO_GSI_ON_PROP = T,
-#'                                                  BLFILE = file.path(DAT.DIR, "data_for_testing", "sthd_test_super_informo_baseline.txt")
-#'                                                  )
-#'
-#' # the two things above should be the same, but observe:
-#' super_informo_gsi_result == known_stock_result
-#' 
-#' # it gets the correct result for most everything, but the CI coverages look unstable to me.
-#' # why is that?
+#' # Do a short run using the gsi assignments
+#' gsi_result1 <- run_boot_gsi_analysis(nsim=10, B=50, DO_GSI_ON_PROP = T)
 #' 
 run_boot_gsi_analysis <- function(
 	DAT.DIR = system.file("data_files", package="lowergranite", mustWork=T),
