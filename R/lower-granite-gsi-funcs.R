@@ -1,66 +1,5 @@
 
 
-# given a list, ru.list, of reporting units that has the populations in each,
-# and a vector, pops, of population names in the order in which they appear in the gsi_sim 
-# file, and a vector of counts, C,  that are named by the reporting units,
-# this function writes out the series of "fixed-Pi" commands that gsi_sim needs
-# to simulate a mixture according to C.  Note that fish are sampled at random from
-# the populations within a reporting unit.
-gsi.sim.Write.Fixed.Pi <- function(ru.list, pops, C) {
-	# check to make sure ru.list and names of C are compatible:
-	problems <- c(setdiff(names(C), names(ru.list)), setdiff(names(ru.list), names(C)))
-	if(length(problems)>0) stop(paste("Mismatch between ru.list and names(C). Check names:", paste(problems, collapse=" ")))
-	
-	# now determine number of fish from each baseline population
-	nums <- unlist(lapply(names(C), function(x) {
-			if(C[x]>0) {
-				M <- as.vector(rmultinom(1, C[x], rep(1, length(ru.list[[x]]))/length(ru.list[[x]]))) # draw number of fish from each pop within the reporting unit
-				names(M) <- ru.list[[x]]	
-				M
-			}
-		}
-	))
-	
-	nums <- nums[nums>0] # drop those that have 0 fish in them
-	
-	# then return the command line string that we will need:
-	paste("-n", names(nums), "--fixed-Pi", nums, "--end-pop", collapse=" ")
-	
-}
-
-
-
-# given a call, gsi.call, to GSI_SIM and a character vector, pops, of the populations ordered as in the baseline
-# file, and a list, ru.list,  of the reporting units, and a vector ru.ord of the reporting units in the
-# order that we want the final output to be in, this function makes the call to gsi sim, 
-# then it aggregates the posteriors into reporting units and assigns each fish to the 
-# maximum likelihood reporting unit, and then it counts up how many fish were inferred to
-# originate from each of the reporting units.
-gsi.simCallAndCondense <- function(gsi.call,  pops,  ru.list,  ru.ord) {
-	# make the call and capture all the output text
-	zz <- pipe(gsi.call)
-	gsi.big.out <- readLines(zz)
-	close(zz)
-	
-	# then get just the lines you want and read them into a data frame:
-	ggg <- textConnection(gsi.big.out[grep("^MIXED_FISH_INDIVS:", gsi.big.out)])
-	gsi.df <- read.table(ggg)
-	close(ggg)
-	
-	p <- as.matrix(gsi.df[,-(1:5)])  # get the posteriors and scaled likelihoods for each fish to each population
-	p <- p[,1:(ncol(p)/2)]  # this cuts out the scaled likelihoods and leaves us just with the posteriors
-	colnames(p)<-pops;  # name each column with the population it corresponds to
-	# the next line sums the posteriors over each population in each reporting group and finds the reporting group with highest posterior
-	#ass.to <- names(ru.list)[apply(sapply(ru.list, function(x) rowSums(p[,x])), 1, which.max)]  # vector of reporting units each fish was assigned to
-	ass.to <- names(ru.list)[apply(sapply(ru.list, function(x) rowSums(cbind(p[,x]))), 1, which.max)]  # vector of reporting units each fish was assigned to
-  
-	# now we just have to table that up and order it by ru.ord (which may be different from the order in ru.list, though it isn't for steelhead...)
-	table(factor(ass.to, levels=ru.ord))  # this is what we return
-	
-}
-
-
-
 
 
 #' return a population drawn at random from those in a reporting unit
@@ -70,6 +9,7 @@ gsi.simCallAndCondense <- function(gsi.call,  pops,  ru.list,  ru.ord) {
 #' sampled uniformly from within each rg
 #' @param ru.list  list whose names are reporting units and components are vectors of population names
 #' @param sampled_rgs a vector of reporting units (denoting the stock of each fish for example)
+#' @export
 get_pop_for_rg <- function(ru.list, sampled_rgs) {
   res <- rep(NA, length(sampled_rgs))
   tab <- table(sampled_rgs) # count up the occurrences
@@ -85,7 +25,6 @@ get_pop_for_rg <- function(ru.list, sampled_rgs) {
 
 
 #' modify the Sim.List so that Prop are gsi assignments
-#' 
 #' 
 #' @export
 gsi_ize_the_Sim.List <- function(Sim.List, ru.list, GSISIM, BLFILE, Originnames, BL.pops) {
