@@ -9,7 +9,7 @@ run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
   DO_GSI_ON_PROP = FALSE, GSISIM = gsi_simBinaryPath(), GSI_SEEDS = c(NA,
   NA), BLFILE = file.path(DAT.DIR, "sthd_base_v3_187.txt"),
   RUFILE = file.path(DAT.DIR, "sthd_base_v3_rg.txt"), alph = 0.1, B = 5,
-  nsim = 2)
+  nsim = 2, console_messages_to = "")
 }
 \arguments{
   \item{DAT.DIR}{The directory where all the data files
@@ -53,6 +53,11 @@ run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
   default is 2 --- much lower than it should be (should be
   more like 500) because it takes a long time and this is
   better for testing}
+
+  \item{console_messages_to}{path to a file you want the
+  console messages written to.  Note that it will always
+  append these to a file.  Default is "" which means send
+  it to the console.}
 }
 \description{
 This is basically Kirk's script that eric has wrapped up into a function, and made

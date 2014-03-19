@@ -41,6 +41,8 @@
 #' @param nsim number of simulation replicates to do. The default is 2 --- much lower than it should be 
 #' (should be more like 500)
 #' because it takes a long time and this is better for testing
+#' @param console_messages_to  path to a file you want the console messages written to.  Note that it will
+#' always append these to a file.  Default is "" which means send it to the console.
 #' @export
 #' @examples 
 #' # Do a very short run with known stock of origin:
@@ -70,7 +72,8 @@ run_boot_gsi_analysis <- function(
   RUFILE  = file.path(DAT.DIR, "sthd_base_v3_rg.txt"),
   alph = 0.10,
   B = 5,
-  nsim = 2
+  nsim = 2,
+	console_messages_to=""
 ) {
 
 
@@ -209,9 +212,9 @@ run_boot_gsi_analysis <- function(
 
   
 
-  cat("\nStart time: ",date(),"\n")
-  cat("\nThis is a run of ", Run, "\n")
-  cat("\nParametric bootstrap: B = ",B,"Alpha =",alph,"\n")
+  cat("\nStart time: ",date(),"\n", file=console_messages_to, append=T)
+  cat("\nThis is a run of ", Run, "\n", file=console_messages_to, append=T)
+  cat("\nParametric bootstrap: B = ",B,"Alpha =",alph,"\n", file=console_messages_to, append=T)
 
   # Read in weekly counts and define the true POPULATION
 
@@ -398,20 +401,20 @@ run_boot_gsi_analysis <- function(
 
   sumrys = round(sumrys,digits=3)
 
-  cat("\nNumber of simulations ",nS,"\n")
-  cat("\nPROPERTY                Total Wild")
-  cat("\nPopulation Truth       ",TrueWild)
-  cat("\nBias                   ",biasTot)
-  cat("\nPercent Bias           ",pctbiasTot)
-  cat("\nVariance               ",varnTot)
-  cat("\nMean Square Error      ",mseTot)
-  cat("\nRoot Mean Square Error ",rmseTot)
-  cat("\nStandard Error         ",seTot)
-  cat("\nCI coverage            ",coverTot)
-  cat("\nE(widthTotalWild)      ",EwidthTot)
-  cat("\nJoint CI coverage     ",coverALL,"\n")
-  print(sumrys)
-  cat("\nEnd time: ",date(),"\n")
+  cat("\nNumber of simulations ",nS,"\n", file=console_messages_to, append=T)
+  cat("\nPROPERTY                Total Wild", file=console_messages_to, append=T)
+  cat("\nPopulation Truth       ",TrueWild, file=console_messages_to, append=T)
+  cat("\nBias                   ",biasTot, file=console_messages_to, append=T)
+  cat("\nPercent Bias           ",pctbiasTot, file=console_messages_to, append=T)
+  cat("\nVariance               ",varnTot, file=console_messages_to, append=T)
+  cat("\nMean Square Error      ",mseTot, file=console_messages_to, append=T)
+  cat("\nRoot Mean Square Error ",rmseTot, file=console_messages_to, append=T)
+  cat("\nStandard Error         ",seTot, file=console_messages_to, append=T)
+  cat("\nCI coverage            ",coverTot, file=console_messages_to, append=T)
+  cat("\nE(widthTotalWild)      ",EwidthTot, file=console_messages_to, append=T)
+  cat("\nJoint CI coverage     ",coverALL,"\n", file=console_messages_to, append=T)
+  # print(sumrys)  # eric commented this out because the function now returns this
+  cat("\nEnd time: ",date(),"\n", file=console_messages_to, append=T)
 
   write.csv(sumrys, file = "summary.csv",row.names=TRUE)
 
