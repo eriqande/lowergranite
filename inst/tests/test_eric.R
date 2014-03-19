@@ -37,22 +37,53 @@ test_that("extract_multi_fix_sim_to_df catches produces correct result on known 
 
 
 
+
+context("Test for consistency of known results on short analyses")
+
+
+test_that("The no-gsi case gives expected results on short analysis of test data", {
+  set.seed(15)
+  cons_arg <- basic_args
+  cons_arg$reset_booty_seed <- 0
+  known_stock_result15 <- do.call(run_boot_gsi_analysis, args=cons_arg)
+  
+  expect_that(known_stock_result15, is_identical_to(lg_test_data$known_stock_result15))
+})
+
+
+test_that("The with-gsi case gives expected results on short analysis of test data", {
+  set.seed(15)
+  cons_arg <- basic_args
+  cons_arg$reset_booty_seed <- 0
+  cons_arg$BLFILE <- file.path(test_data_dir, "sthd_base_v3_187.txt")
+  gsi_stock_result15 <- do.call(run_boot_gsi_analysis, args=cons_arg)
+  
+  expect_that(gsi_stock_result15, is_identical_to(lg_test_data$gsi_stock_result15))
+})
+
+
+
+
+
+
+
 context("Test eric's gsi-sim replacements")
 
 test_that("gsi_sim replacements with super-informo-data give same results as known stock", {
   # we just do a very short run with no gsi and the same run with gsi using super informative data
   # which should return exactly the same result.
-  
+  rep_args <- basic_args
   set.seed(5)
-  known_stock_result <- do.call(run_boot_gsi_analysis, args=basic_args)
+  known_stock_result <- do.call(run_boot_gsi_analysis, args=rep_args)
   
-  basic_args$DO_GSI_ON_PROP <- T  # set it up to make and use gsi_assignments
+  rep_args$DO_GSI_ON_PROP <- T  # set it up to make and use gsi_assignments
   set.seed(5)
-  super_informo_gsi_result <- do.call(run_boot_gsi_analysis, args=basic_args)
+  super_informo_gsi_result <- do.call(run_boot_gsi_analysis, args=rep_args)
                                                     
   expect_that(known_stock_result, is_identical_to(super_informo_gsi_result))
   
 })
+
 
 
 
