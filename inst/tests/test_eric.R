@@ -13,7 +13,8 @@ basic_args <- list(
   BLFILE = file.path(test_data_dir, "sthd_super_informo_baseline.txt"),
   RUFILE = file.path(test_data_dir, "sthd_base_v3_rg.txt"),
   STOCK.DATA.XLSX = file.path(test_data_dir, "SH11SIMPOPstock.xlsx"),
-  console_messages_to = "TestConsoleOutput.txt"
+  console_messages_to = "TestConsoleOutput.txt",
+  reset_booty_seed=325
 )
 
 
@@ -45,13 +46,14 @@ test_that("gsi_sim replacements with super-informo-data give same results as kno
   set.seed(5)
   known_stock_result <- do.call(run_boot_gsi_analysis, args=basic_args)
   
-  basic_args$DO_GSI_ON_PROP=T  # set it up to make and use gsi_assignments
+  basic_args$DO_GSI_ON_PROP <- T  # set it up to make and use gsi_assignments
   set.seed(5)
   super_informo_gsi_result <- do.call(run_boot_gsi_analysis, args=basic_args)
                                                     
-  expect_that(known_stock_result[1:7,], is_identical_to(super_informo_gsi_result[1:7,]))
+  expect_that(known_stock_result, is_identical_to(super_informo_gsi_result))
   
 })
+
 
 
 

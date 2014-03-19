@@ -43,6 +43,11 @@
 #' because it takes a long time and this is better for testing
 #' @param console_messages_to  path to a file you want the console messages written to.  Note that it will
 #' always append these to a file.  Default is "" which means send it to the console.
+#' @param reset_booty_seed for some reason, calling gsi_sim seems to get the random number generator out
+#' of state in a way that cannot be restored by saving .Random.seed and then setting that value back to 
+#' itself.  It is odd and vexing.  Anyway, in order to test that comparable results are obtained with
+#' the super-informo gsi data, we have this.  It should be an integer.  If >0 then it will be passed
+#' to \code{\link{set.seed()}} after the gsi code has been run (before entering the bootstrap loop.)
 #' @export
 #' @examples 
 #' # Do a very short run with known stock of origin:
@@ -73,7 +78,8 @@ run_boot_gsi_analysis <- function(
   alph = 0.10,
   B = 5,
   nsim = 2,
-	console_messages_to=""
+	console_messages_to="",
+	reset_booty_seed=0
 ) {
 
 
@@ -285,16 +291,20 @@ run_boot_gsi_analysis <- function(
     )  # end of the lapply function
   
   
+  
   if(DO_GSI==TRUE)  {
     # this is just calling the function here, but not incorporating the changes in the real Sim.List
     Sim.List.Orig <- Sim.List  # just keeping this around for good measure
     # get gsi assignments for each simulated fish
     gsi.list <-  gsi_ize_the_Sim.List(Sim.List, RU.list, GSISIM, BLFILE, Originnames, BL.pops)
     # and then copy those back to the Sim.List structure
-    Sim.List <- lapply(1:length(gsi.list), function(x) {y<-Sim.List[[x]]; y$Prop<-do.call(rbind, args=gsi.list[[x]]); y})
+    Modified <- lapply(1:length(gsi.list), function(x) {y<-Sim.List[[x]]; y$Prop<-do.call(rbind, args=gsi.list[[x]]); y})
+    Sim.List <- Modified  # this is where we put the gsi assignments back in place of the "truth"
   }
-    
-    
+
+   if(reset_booty_seed > 0) {
+      set.seed(reset_booty_seed) 
+   }
   
   
     # Convert the random trap and proportion data sets to wild and sex/origin proportions
@@ -346,7 +356,7 @@ run_boot_gsi_analysis <- function(
   # Save simulation results to excel file
   simstf <- as.data.frame(simstf) # Use this the first time
   allstf <- as.data.frame(simstf) # Use this the first time 
-  res <- write.xlsx(allstf,"SH11stock.xlsx",col.names=TRUE,row.names=FALSE,append=FALSE) #  Use this the first time
+  #res <- write.xlsx(allstf,"SH11stock.xlsx",col.names=TRUE,row.names=FALSE,append=FALSE) #  Use this the first time
 
   #  Summarize the results
   #allstf <- read.xlsx("SH11OriginDec13.xlsx",1) # Get stored results
@@ -417,6 +427,7 @@ run_boot_gsi_analysis <- function(
   cat("\nEnd time: ",date(),"\n", file=console_messages_to, append=T)
 
   write.csv(sumrys, file = "summary.csv",row.names=TRUE)
+
 
   ######################## End of MAIN ##########################################
   return(sumrys)

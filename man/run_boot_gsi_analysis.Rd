@@ -9,7 +9,7 @@ run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
   DO_GSI_ON_PROP = FALSE, GSISIM = gsi_simBinaryPath(), GSI_SEEDS = c(NA,
   NA), BLFILE = file.path(DAT.DIR, "sthd_base_v3_187.txt"),
   RUFILE = file.path(DAT.DIR, "sthd_base_v3_rg.txt"), alph = 0.1, B = 5,
-  nsim = 2, console_messages_to = "")
+  nsim = 2, console_messages_to = "", reset_booty_seed = 0)
 }
 \arguments{
   \item{DAT.DIR}{The directory where all the data files
@@ -58,6 +58,16 @@ run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
   console messages written to.  Note that it will always
   append these to a file.  Default is "" which means send
   it to the console.}
+
+  \item{reset_booty_seed}{for some reason, calling gsi_sim
+  seems to get the random number generator out of state in
+  a way that cannot be restored by saving .Random.seed and
+  then setting that value back to itself.  It is odd and
+  vexing.  Anyway, in order to test that comparable results
+  are obtained with the super-informo gsi data, we have
+  this.  It should be an integer.  If >0 then it will be
+  passed to \code{\link{set.seed()}} after the gsi code has
+  been run (before entering the bootstrap loop.)}
 }
 \description{
 This is basically Kirk's script that eric has wrapped up into a function, and made

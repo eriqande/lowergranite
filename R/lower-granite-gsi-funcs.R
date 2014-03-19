@@ -128,7 +128,8 @@ gsi_ize_the_Sim.List <- function(Sim.List, ru.list, GSISIM, BLFILE, Originnames,
   # awk '/^MULTI_FIX_MIX_MIXFISH_NAMES_HEADER:/ && got_it==0 {print; got_it=1; fields=NF} /^MULTI_FIX_MIX_MIXED_FISH_INDIVS:/ {for(i=1;i<=fields;i++) printf("%s ", $i); printf("\n")}'
   # but for the PC folks, we will just do all this in R.  It is a little slower but not too bad
   gsi.big.out <- system2(GSISIM, args=gsi.args, stdout=T)
-    
+
+
   # now extract the gsi simulation results:
   gsi_output_df <- extract_multi_fix_sim_to_df(gsi.big.out, ru.list, Originnames)
   
