@@ -1,0 +1,10 @@
+
+These are data files that are tied to particular tests
+of various functions and things in this package.
+
+If you modify these, then it will likely break many 
+of the tests.  Don't modify.  There shouldn't be a need
+to modify these.
+
+Feel free to add files to this directory, though.
+
