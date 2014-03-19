@@ -26,6 +26,11 @@
 #' gsi_sim_seeds file if one wants to set the set for gsi_sim (otherwise it gets it from time
 #' or former seed file).
 #' @param STOCK.DATA.XLSX the path of the file that has the stock data in it used to drive the simulations
+#' @param Originnames The names of the stocks you want to include.  These must correspond to the column
+#' header names in STOCK.DATA.XLSX.  We will probably end up doing something different, eventually, but at least we can
+#' get this code in here and working for now.
+#' @param collaps A vector of numbers in 1,...,N telling which weeks should be lumped together into "statistical weeks" from Kirk's code. It looks 
+#' like this gets used in a lot of the bootstrapping functions, but is not a formal parameter of the bootstrapping functions.
 #' @param DO_GSI_ON_PROP if set to TRUE then gsi_sim is used to create assignments that replace the assignments in the variable Prop.  If FALSE
 #' then the true origins are used.
 #' @param GSISIM path to the gsi_sim executable. 
@@ -70,6 +75,8 @@ run_boot_gsi_analysis <- function(
 	DAT.DIR = system.file("data_files", package="lowergranite", mustWork=T),
   WORK.DIR = getwd(),
   STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOPstock.xlsx"),
+	Originnames = c("UPSALM","MFSALM","SFSALM","LOSALM","UPCLWR","SFCLWR","LOCLWR","IMNAHA","GRROND","LSNAKE"),
+	collaps = c(1,1,1,1,1,2,2,2,3,4,5,6,7,8,9,10,10,10,10,11,11,11,11,11,11,11,11),
 	DO_GSI_ON_PROP  = FALSE,
   GSISIM = gsi_simBinaryPath(),
   GSI_SEEDS = c(NA, NA),
@@ -79,7 +86,7 @@ run_boot_gsi_analysis <- function(
   B = 5,
   nsim = 2,
 	console_messages_to="",
-	reset_booty_seed=0
+	reset_booty_seed = 0
 ) {
 
 
@@ -236,8 +243,7 @@ run_boot_gsi_analysis <- function(
   #nA <- length(BYnames)
   #nGrps <- nA
   #nGrps <- 2
-  TrueOrigin <- cbind(W$UPSALM,W$MFSALM,W$SFSALM,W$LOSALM,W$UPCLWR,W$SFCLWR,W$LOCLWR,W$IMNAHA,W$GRROND,W$LSNAKE)
-  Originnames <- c("UPSALM","MFSALM","SFSALM","LOSALM","UPCLWR","SFCLWR","LOCLWR","IMNAHA","GRROND","LSNAKE")
+  TrueOrigin <- as.matrix(W[Originnames]) 
   nO <- length(Originnames)
   nGrps <- nO
   nw <- length(unique(W$Stratum))
@@ -327,10 +333,17 @@ run_boot_gsi_analysis <- function(
     Wprop <- Wtable/apply(Wtable,1,sum)  # This is the proportion hatchery and wild
     
     # Eric replaced Kirk's kluge here by forcing empty factors to get counted too
-    Ptable <- table(factor(Prop$Stratum, levels=1:27), factor(Prop$Groop, levels=Originnames))  
+    Ptable <- table(factor(Prop$Stratum, levels=1:length(unique(W$Stratum))), factor(Prop$Groop, levels=Originnames))  
   
   # Although the proportion data are generated for each statistical week, the data are collapsed to insure adequate sample sizes
-    collaps <- c(1,1,1,1,1,2,2,2,3,4,5,6,7,8,9,10,10,10,10,11,11,11,11,11,11,11,11)
+
+    # here we can test to make sure that collaps makes sense:
+    if(length(collaps) != length(unique(W$Stratum))) stop("collaps should have length equal to the number of strata")
+    missy <- setdiff(range(collaps)[1]:range(collaps)[2], collaps)
+    if(length(missy)>0) stop(paste("collapse is not continuous.  Seems to be missing", paste(missy, collapse=", ") ))
+    
+  
+  
     collapsed <- mApply(Ptable[,1],collaps,sum)
     for ( jj in 2:nGrps ) collapsed <- cbind(collapsed,mApply(Ptable[,jj],collaps,sum))
     Pprop <- collapsed/apply(collapsed,1,sum)

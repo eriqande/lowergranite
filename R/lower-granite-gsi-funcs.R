@@ -62,6 +62,7 @@ gsi.simCallAndCondense <- function(gsi.call,  pops,  ru.list,  ru.ord) {
 
 
 
+
 #' return a population drawn at random from those in a reporting unit
 #' 
 #' pass this a vector of reporting group names and a list of the 

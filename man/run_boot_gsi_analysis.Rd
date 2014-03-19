@@ -6,6 +6,9 @@
 run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
   "lowergranite", mustWork = T), WORK.DIR = getwd(),
   STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOPstock.xlsx"),
+  Originnames = c("UPSALM", "MFSALM", "SFSALM", "LOSALM", "UPCLWR", "SFCLWR",
+  "LOCLWR", "IMNAHA", "GRROND", "LSNAKE"), collaps = c(1, 1, 1, 1, 1, 2, 2, 2,
+  3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11),
   DO_GSI_ON_PROP = FALSE, GSISIM = gsi_simBinaryPath(), GSI_SEEDS = c(NA,
   NA), BLFILE = file.path(DAT.DIR, "sthd_base_v3_187.txt"),
   RUFILE = file.path(DAT.DIR, "sthd_base_v3_rg.txt"), alph = 0.1, B = 5,
@@ -25,6 +28,18 @@ run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
 
   \item{STOCK.DATA.XLSX}{the path of the file that has the
   stock data in it used to drive the simulations}
+
+  \item{Originnames}{The names of the stocks you want to
+  include.  These must correspond to the column header
+  names in STOCK.DATA.XLSX.  We will probably end up doing
+  something different, eventually, but at least we can get
+  this code in here and working for now.}
+
+  \item{collaps}{A vector of numbers in 1,...,N telling
+  which weeks should be lumped together into "statistical
+  weeks" from Kirk's code. It looks like this gets used in
+  a lot of the bootstrapping functions, but is not a formal
+  parameter of the bootstrapping functions.}
 
   \item{DO_GSI_ON_PROP}{if set to TRUE then gsi_sim is used
   to create assignments that replace the assignments in the
