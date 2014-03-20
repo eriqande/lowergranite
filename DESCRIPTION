@@ -7,7 +7,8 @@ Author: Kirk Steinhorst, Mike Ackerman, Eric C. Anderson
 Maintainer: Eric C. Anderson  <eric.anderson@noaa.gov>
 Description: Implements bootstrapping to assess precision of estimates of
     abundance, etc.
-License: GPL-3
+License: Eric's portion at least US Govt public domain. Must consult with
+    others.
 LazyData: true
 Roxygen: list(wrap = FALSE)
 Suggests:

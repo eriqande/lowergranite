@@ -7,24 +7,33 @@
 #' to gsi_sim in one fell swoop and the Groop of each fish is replaced by its "gsi-inferred"
 #' Groop.
 #' 
-#' Note that the default valus here are set up to do an analysis of the steelhead data,
+#' Note that the default values here are set up to do an analysis of the steelhead data,
 #' and, by default, to not use gsi_sim assigments.
 #' 
-#' @note You can expect to get warnings that look like this: \code{Warning message:}
+#' @note Running gsi_sim this produced warnings that look like this: 
+#' \code{Warning message:}
 #' \code{In system2(GSISIM, args = gsi.args, stdout = T) :} 
-#' \code{line 98 may be truncated in call to system(, intern = TRUE)}.  This is \emph{not} a problem.
-#' The cause of this is that the output file from gsi_sim has a line it that shows that the
-#' command line looked like after all the --multi-fix-mix commands were stuck onto it using
-#' gsi_sim's --command-file option.  That line is so large that system() chops it into two
-#' (or many, if you are doing large nsim).  This line is far away from any of the important
+#' \code{line 98 may be truncated in call to system(, intern = TRUE)}.  
+#' This was \emph{not} a problem.
+#' The cause of this is that the output file from gsi_sim has a line it
+#' that shows that the
+#' command line looked like after all the --multi-fix-mix commands 
+#' were stuck onto it using
+#' gsi_sim's --command-file option.  That line is so large that system() 
+#' chops it into two
+#' (or many, if you are doing large nsim).  This line is 
+#' far away from any of the important
 #' lines we will grep out, however, so it is not of any consequence.
+#' I wrapped it in a \code{\link{suppressWarnings}} to not bark too much.
 #' 
-#' @param DAT.DIR  The directory where all the data files are.  Defaults to the dictory
+#' Also note that this function still writes stuff out to an xlsx file of a name
+#' that is not specified in the parameters yet.  It will probably be better 
+#' to just return it as a data frame or matrix anyway.
+#' @return returns the \code{sumrys} object from Kirk's script.
+#' @param DAT.DIR  The directory where all the data files are.  Defaults to the directory
 #' "data_files" in the installed package
 #' @param WORK.DIR  The working directory to do this in.  Default = current working directory.
-#' Note that gsi_sim will also be run in this directory, so it is where one should put a 
-#' gsi_sim_seeds file if one wants to set the set for gsi_sim (otherwise it gets it from time
-#' or former seed file).
+#' Note that gsi_sim will also be run in this directory.
 #' @param STOCK.DATA.XLSX the path of the file that has the stock data in it used to drive the simulations
 #' @param Originnames The names of the stocks you want to include.  These must correspond to the column
 #' header names in STOCK.DATA.XLSX.  We will probably end up doing something different, eventually, but at least we can

@@ -1,7 +1,7 @@
 
 #' given a file path x (or vector of them) return the path with quotes around it
 #' 
-#' The system path on window has spaces in it which causes problems with 
+#' The system path on Windows has spaces in it which causes problems with 
 #' \code{\link{pipe}} and other such system calls.  This just puts those
 #' paths inside quotation marks
 #' @param x  a file path (or a vector of paths)
@@ -32,7 +32,7 @@ gsi_simBinaryPath <- function() {
 
 #' reads a gsi_sim file and returns a vector of population names
 #' @param path to gsi_sim baseline file
-gsisim2PopsList <- function(bl.file="/Users/eriq/Documents/xp_dev_svn_checkouts/gsi_sim/snpset/2010_SNPset_GSI_TOOLS/Baseline/snpset_Baseline.txt") {
+gsisim2PopsList <- function(bl.file) {
 	bf <- readLines(bl.file)
 	bf <- bf[grep("^POP[[:blank:]]", bf)]  # pull out just the POP lines
 	sapply(strsplit(bf, "[[:blank:]]+"), function(x) x[2])  # now get and return the population names

@@ -3,8 +3,7 @@
 \alias{gsisim2PopsList}
 \title{reads a gsi_sim file and returns a vector of population names}
 \usage{
-
-  gsisim2PopsList(bl.file = "/Users/eriq/Documents/xp_dev_svn_checkouts/gsi_sim/snpset/2010_SNPset_GSI_TOOLS/Baseline/snpset_Baseline.txt")
+gsisim2PopsList(bl.file)
 }
 \arguments{
   \item{path}{to gsi_sim baseline file}

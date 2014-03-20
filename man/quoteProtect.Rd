@@ -9,7 +9,7 @@ quoteProtect(x)
   \item{x}{a file path (or a vector of paths)}
 }
 \description{
-The system path on window has spaces in it which causes problems with
+The system path on Windows has spaces in it which causes problems with
 \code{\link{pipe}} and other such system calls.  This just puts those
 paths inside quotation marks
 }
