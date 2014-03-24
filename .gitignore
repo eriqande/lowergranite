@@ -14,3 +14,6 @@
 src/*.so
 src/*.o
 .RData
+gsi_multi_fix_calls.txt
+gsi_sim_seeds
+summary.csv

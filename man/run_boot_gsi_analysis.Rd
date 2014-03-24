@@ -3,12 +3,11 @@
 \alias{run_boot_gsi_analysis}
 \title{Run the bootstrap analysis, with gsi module if specified in parameters}
 \usage{
-run_boot_gsi_analysis(W = NULL, DAT.DIR = system.file("data_files", package
-  = "lowergranite", mustWork = T), WORK.DIR = getwd(),
-  STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOPstock.xlsx"),
-  Originnames = c("UPSALM", "MFSALM", "SFSALM", "LOSALM", "UPCLWR", "SFCLWR",
-  "LOCLWR", "IMNAHA", "GRROND", "LSNAKE"), collaps = c(1, 1, 1, 1, 1, 2, 2, 2,
-  3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11),
+run_boot_gsi_analysis(W = NULL, stock_group_start_col,
+  DAT.DIR = system.file("data_files", package = "lowergranite", mustWork = T),
+  WORK.DIR = getwd(), STOCK.DATA.XLSX = file.path(DAT.DIR,
+  "SH11SIMPOPstock.xlsx"), collaps = c(1, 1, 1, 1, 1, 2, 2, 2, 3, 4, 5, 6, 7,
+  8, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11),
   DO_GSI_ON_PROP = FALSE, GSISIM = gsi_simBinaryPath(), GSI_SEEDS = c(NA,
   NA), BLFILE = file.path(DAT.DIR, "sthd_base_v3_187.txt"),
   RUFILE = file.path(DAT.DIR, "sthd_base_v3_rg.txt"), alph = 0.1, B = 5,
@@ -25,6 +24,19 @@ run_boot_gsi_analysis(W = NULL, DAT.DIR = system.file("data_files", package
   used instead of STOCK.DATA.XLSX.  If both W and
   STOCK.DATA.XLSX are NULL, that is an error.}
 
+  \item{stock_group_start_col}{The column at which the
+  stock groups start in the xlsx file (or, equivalently, in
+  the data frame W).  That data frame, (whether it was
+  passed in as W or read from an xlsx file) must have
+  column names that correspond to the groupings of stocks
+  that you want to do the bootstrapping for.  (For example,
+  "UPSALM", "MFSALM", "SFSALM", ... ).  The column at which
+  those names start must be passed to this function as
+  \code{stock_group_start_col}. You must specify a value
+  for this.  There is no default.  \emph{Note:} there must
+  be no other columns in the data frame after the stock
+  group columns.}
+
   \item{DAT.DIR}{The directory where all the data files
   are.  Defaults to the directory "data_files" in the
   installed package}
@@ -37,12 +49,6 @@ run_boot_gsi_analysis(W = NULL, DAT.DIR = system.file("data_files", package
   stock data in it used to drive the simulations. This can
   be NULL, in which case parameter \code{W} must be
   specified.}
-
-  \item{Originnames}{The names of the stocks you want to
-  include.  These must correspond to the column header
-  names in STOCK.DATA.XLSX.  We will probably end up doing
-  something different, eventually, but at least we can get
-  this code in here and working for now.}
 
   \item{collaps}{A vector of numbers in 1,...,N telling
   which weeks should be lumped together into "statistical
@@ -133,9 +139,9 @@ to just return it as a data frame or matrix anyway.
 \examples{
 # Do a very short run with known stock of origin:
 set.seed(5)
-known_stock_result1 <- run_boot_gsi_analysis(nsim=10, B=50, DO_GSI_ON_PROP = F)
+known_stock_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 10, B = 50, DO_GSI_ON_PROP = F)
 
 # Do a short run using the gsi assignments
-gsi_result1 <- run_boot_gsi_analysis(nsim=10, B=50, DO_GSI_ON_PROP = T)
+gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 10, B = 50, DO_GSI_ON_PROP = T)
 }
 

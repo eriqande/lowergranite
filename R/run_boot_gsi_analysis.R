@@ -35,15 +35,18 @@
 #' just pass a data frame in directly.  By default W is NULL, in which case the stock data will be obtained
 #' by reading in the STOCK.DATA.XLSX file.  If W is not NULL, then W will be used instead
 #' of STOCK.DATA.XLSX.  If both W and STOCK.DATA.XLSX are NULL, that is an error.
+#' @param stock_group_start_col The column at which the stock groups start in the xlsx file (or, equivalently,
+#' in the data frame W).  That data frame, (whether it was passed in as W or read from an xlsx file) must have column
+#' names that correspond to the groupings of stocks that you want to do the bootstrapping for.  (For example,
+#' "UPSALM", "MFSALM", "SFSALM", ... ).  The column at which those names start must be passed to this function as
+#' \code{stock_group_start_col}. You must specify a value for this.  There is no default.  \emph{Note:} there must be no other columns in the data frame after the stock group
+#' columns.
 #' @param DAT.DIR  The directory where all the data files are.  Defaults to the directory
 #' "data_files" in the installed package
 #' @param WORK.DIR  The working directory to do this in.  Default = current working directory.
 #' Note that gsi_sim will also be run in this directory.
 #' @param STOCK.DATA.XLSX the path of the file that has the stock data in it used to drive the simulations. This can be NULL, in which
 #' case parameter \code{W} must be specified.  
-#' @param Originnames The names of the stocks you want to include.  These must correspond to the column
-#' header names in STOCK.DATA.XLSX.  We will probably end up doing something different, eventually, but at least we can
-#' get this code in here and working for now.
 #' @param collaps A vector of numbers in 1,...,N telling which weeks should be lumped together into "statistical weeks" from Kirk's code. It looks 
 #' like this gets used in a lot of the bootstrapping functions, but is not a formal parameter of the bootstrapping functions.
 #' @param DO_GSI_ON_PROP if set to TRUE then gsi_sim is used to create assignments that replace the assignments in the variable Prop.  If FALSE
@@ -73,17 +76,17 @@
 #' @examples 
 #' # Do a very short run with known stock of origin:
 #' set.seed(5)
-#' known_stock_result1 <- run_boot_gsi_analysis(nsim=10, B=50, DO_GSI_ON_PROP = F)
+#' known_stock_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 10, B = 50, DO_GSI_ON_PROP = F)
 #' 
 #' # Do a short run using the gsi assignments
-#' gsi_result1 <- run_boot_gsi_analysis(nsim=10, B=50, DO_GSI_ON_PROP = T)
+#' gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 10, B = 50, DO_GSI_ON_PROP = T)
 #' 
 run_boot_gsi_analysis <- function(
   W=NULL,
+  stock_group_start_col,
 	DAT.DIR = system.file("data_files", package="lowergranite", mustWork=T),
   WORK.DIR = getwd(),
   STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOPstock.xlsx"),
-	Originnames = c("UPSALM","MFSALM","SFSALM","LOSALM","UPCLWR","SFCLWR","LOCLWR","IMNAHA","GRROND","LSNAKE"),
 	collaps = c(1,1,1,1,1,2,2,2,3,4,5,6,7,8,9,10,10,10,10,11,11,11,11,11,11,11,11),
 	DO_GSI_ON_PROP  = FALSE,
   GSISIM = gsi_simBinaryPath(),
@@ -243,7 +246,9 @@ run_boot_gsi_analysis <- function(
   if(is.null(W)) {  # get this as the data frame already passed in, or, if not, read it from the xlsx file
     W <- read.xlsx(STOCK.DATA.XLSX,1)
   }
-
+  
+  # here we pull the originnames out of the file
+  Originnames <- names(W)[stock_group_start_col:ncol(W)]
 
   W$SimPop <- round(W$SimPop)
   TrueWild <- sum(W$PopWild)

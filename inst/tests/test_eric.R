@@ -5,6 +5,7 @@ test_dir <- tempfile()
 dir.create(test_dir)
 test_data_dir <- file.path(system.file("data_files", package="lowergranite", mustWork=T), "data_for_testing")
 basic_args <- list(
+  stock_group_start_col = 14,
   DAT.DIR = test_data_dir,
   WORK.DIR = test_dir,
   nsim = 2, 
