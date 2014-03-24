@@ -30,11 +30,17 @@
 #' that is not specified in the parameters yet.  It will probably be better 
 #' to just return it as a data frame or matrix anyway.
 #' @return returns the \code{sumrys} object from Kirk's script.
+#' @param W a data frame that holds all the stock data in it used to drive the simulation.  This is the data
+#' frame that we typically get by reading in the .xlsx file named in STOCK.DATA.XLSX.  However, we can also
+#' just pass a data frame in directly.  By default W is NULL, in which case the stock data will be obtained
+#' by reading in the STOCK.DATA.XLSX file.  If W is not NULL, then W will be used instead
+#' of STOCK.DATA.XLSX.  If both W and STOCK.DATA.XLSX are NULL, that is an error.
 #' @param DAT.DIR  The directory where all the data files are.  Defaults to the directory
 #' "data_files" in the installed package
 #' @param WORK.DIR  The working directory to do this in.  Default = current working directory.
 #' Note that gsi_sim will also be run in this directory.
-#' @param STOCK.DATA.XLSX the path of the file that has the stock data in it used to drive the simulations
+#' @param STOCK.DATA.XLSX the path of the file that has the stock data in it used to drive the simulations. This can be NULL, in which
+#' case parameter \code{W} must be specified.  
 #' @param Originnames The names of the stocks you want to include.  These must correspond to the column
 #' header names in STOCK.DATA.XLSX.  We will probably end up doing something different, eventually, but at least we can
 #' get this code in here and working for now.
@@ -73,6 +79,7 @@
 #' gsi_result1 <- run_boot_gsi_analysis(nsim=10, B=50, DO_GSI_ON_PROP = T)
 #' 
 run_boot_gsi_analysis <- function(
+  W=NULL,
 	DAT.DIR = system.file("data_files", package="lowergranite", mustWork=T),
   WORK.DIR = getwd(),
   STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOPstock.xlsx"),
@@ -91,6 +98,8 @@ run_boot_gsi_analysis <- function(
 ) {
 
 
+  
+  if(is.null(STOCK.DATA.XLSX) && is.null(W)) stop("At least one of STOCK.DATA.XLSX or W must be non-NULL")
   
   # Start by setting the working directory.
   setwd(WORK.DIR)
@@ -231,10 +240,11 @@ run_boot_gsi_analysis <- function(
   cat("\nParametric bootstrap: B = ",B,"Alpha =",alph,"\n", file=console_messages_to, append=T)
 
   # Read in weekly counts and define the true POPULATION
+  if(is.null(W)) {  # get this as the data frame already passed in, or, if not, read it from the xlsx file
+    W <- read.xlsx(STOCK.DATA.XLSX,1)
+  }
 
-  W <- read.xlsx(STOCK.DATA.XLSX,1)
-  #W <- read.xlsx("SH11SIMPOP.xlsx",1)
-  W
+
   W$SimPop <- round(W$SimPop)
   TrueWild <- sum(W$PopWild)
   #TrueSex <- cbind(W$Pfemale, 1 - W$Pfemale)

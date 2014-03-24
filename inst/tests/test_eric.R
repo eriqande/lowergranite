@@ -37,6 +37,21 @@ test_that("extract_multi_fix_sim_to_df catches produces correct result on known 
 
 
 
+context("Test that passing a data frame into run_boot_gsi_analysis() gives the same results as passing in the identical xlsx file")
+test_that("specifying data frame and xlsx give identical results using a simple no-gsi example", {
+  set.seed(15)
+  xlsx_args <- basic_args
+  xlsx_result <- do.call(run_boot_gsi_analysis, args=xlsx_args)
+  
+  set.seed(15)
+  df_args <- xlsx_args
+  df_args$W <- read.xlsx(xlsx_args$STOCK.DATA.XLSX, 1)  # pass in a data frame
+  df_args$STOCK.DATA.XLSX <- "NoRealPath"  # wipe out the xlsx path information and put something bogus in there
+  df_result <- do.call(run_boot_gsi_analysis, args=df_args)
+  
+  expect_that(df_result, is_identical_to(xlsx_result))
+})
+
 
 context("Test for consistency of known results on short analyses")
 

@@ -3,8 +3,8 @@
 \alias{run_boot_gsi_analysis}
 \title{Run the bootstrap analysis, with gsi module if specified in parameters}
 \usage{
-run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
-  "lowergranite", mustWork = T), WORK.DIR = getwd(),
+run_boot_gsi_analysis(W = NULL, DAT.DIR = system.file("data_files", package
+  = "lowergranite", mustWork = T), WORK.DIR = getwd(),
   STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOPstock.xlsx"),
   Originnames = c("UPSALM", "MFSALM", "SFSALM", "LOSALM", "UPCLWR", "SFCLWR",
   "LOCLWR", "IMNAHA", "GRROND", "LSNAKE"), collaps = c(1, 1, 1, 1, 1, 2, 2, 2,
@@ -15,6 +15,16 @@ run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
   nsim = 2, console_messages_to = "", reset_booty_seed = 0)
 }
 \arguments{
+  \item{W}{a data frame that holds all the stock data in it
+  used to drive the simulation.  This is the data frame
+  that we typically get by reading in the .xlsx file named
+  in STOCK.DATA.XLSX.  However, we can also just pass a
+  data frame in directly.  By default W is NULL, in which
+  case the stock data will be obtained by reading in the
+  STOCK.DATA.XLSX file.  If W is not NULL, then W will be
+  used instead of STOCK.DATA.XLSX.  If both W and
+  STOCK.DATA.XLSX are NULL, that is an error.}
+
   \item{DAT.DIR}{The directory where all the data files
   are.  Defaults to the directory "data_files" in the
   installed package}
@@ -24,7 +34,9 @@ run_boot_gsi_analysis(DAT.DIR = system.file("data_files", package =
   will also be run in this directory.}
 
   \item{STOCK.DATA.XLSX}{the path of the file that has the
-  stock data in it used to drive the simulations}
+  stock data in it used to drive the simulations. This can
+  be NULL, in which case parameter \code{W} must be
+  specified.}
 
   \item{Originnames}{The names of the stocks you want to
   include.  These must correspond to the column header
