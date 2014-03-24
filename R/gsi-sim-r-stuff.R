@@ -10,6 +10,8 @@ quoteProtect <- function(x) {
   paste("\"", x, "\"", sep="")
 }
 
+#' return path to the gsi sim binary
+#' @export
 gsi_simBinaryPath <- function() {
   if(.Platform$OS.type=="windows") {
     gspath <- file.path(system.file("bin", package="lowergranite"), "gsi_sim.exe")

@@ -3,6 +3,7 @@
 export(extract_multi_fix_sim_to_df)
 export(get_pop_for_rg)
 export(gsi_ize_the_Sim.List)
+export(gsi_simBinaryPath)
 export(gsisimRepUnits2List)
 export(make_super_informo_data)
 export(quoteProtect)
