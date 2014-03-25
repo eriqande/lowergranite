@@ -10,6 +10,7 @@
 #' @param nsim number of simulations
 #' @param B number of bootstrap replicates
 #' @param DoGSI True means do the GSI simulation
+#' @export
 do_steelhead_stock <- function(nsim, B, DoGSI=FALSE) {
   dat.dir = system.file("data_files", package="lowergranite", mustWork=T)
   run_boot_gsi_analysis(
@@ -39,6 +40,7 @@ do_steelhead_stock <- function(nsim, B, DoGSI=FALSE) {
 #' @param nsim number of simulations
 #' @param B number of bootstrap replicates
 #' @param DoGSI True means do the GSI simulation
+#' @export
 do_chinook_stock <- function(nsim, B, DoGSI=FALSE) {
   dat.dir = system.file("data_files", package="lowergranite", mustWork=T)
   run_boot_gsi_analysis(
