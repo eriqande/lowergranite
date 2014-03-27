@@ -175,13 +175,12 @@ run_boot_gsi_analysis <- function(
   ################################################################################
   # bootstrap loop  -- this is a parametric weighted, weighted/collapsed version
     for (b in 1:B) {
-      tstar <- numeric(nw)
-      nHstar <- numeric(nw)
-      for ( h in as.vector(windata[,1])) {
-        tstar[h] <- rbinom(1,nT[h],Trp[h]) # These are number of wild fish for week h
-        nHstar[h] <- round( tstar[h]*W$PWhandled[h] ) # This is the number of bootstrap wild fish handled for week h
-        tstar[h] <- tstar[h]/nT[h] # Convert binomial count into a proportion
-      }
+
+
+      tstar <- rbinom(length(nT), size = nT, prob = Trp) # These are number of wild fish each week
+      nHstar <- round( tstar*W$PWhandled ) # This is the number of bootstrap wild fish handled each week
+      tstar <- tstar/nT # Convert binomial count into a proportion
+
       nHcollaps <- mApply(nHstar,collaps,sum)
       pstar <- matrix(numeric(nCollaps*nGrps),ncol=nGrps)
       for ( h in 1:nCollaps )
