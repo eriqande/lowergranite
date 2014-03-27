@@ -217,10 +217,10 @@ run_boot_gsi_analysis <- function(
           } # for over parameters
           chk <- chk + chkr/B
         } # for over bootstrap samples
-        for (j in 2:p){
-          CI[j,2] <- CI[j,2]*(1-0.001)
-          CI[j,3] <- CI[j,3]*(1+0.001)
-        }
+
+        CI[,2] <- CI[,2]*(1-0.001) # note that eric removed the unnecessary for loop over j
+        CI[,3] <- CI[,3]*(1+0.001)
+
       }  # while chk
 
       CI <- round(CI)
