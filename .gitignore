@@ -17,3 +17,5 @@ src/*.o
 gsi_multi_fix_calls.txt
 gsi_sim_seeds
 summary.csv
+README.html
+TERMS.html
