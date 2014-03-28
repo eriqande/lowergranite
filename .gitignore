@@ -6,7 +6,7 @@
 .DS_store
 .DS_Store
 .Rproj.user
-*.Rproj
+# *.Rproj
 .Rhistory
 *.Rbuildignore
 *.DS_Store
