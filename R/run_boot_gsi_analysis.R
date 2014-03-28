@@ -193,11 +193,9 @@ run_boot_gsi_analysis <- function(
       theta.b[b,] <- c(sum(WiByWe),OW)
        } # End of bootstrap loop
 
-  # Find confidence intervals for each statistic
-    for  (j in 1:p) {
-      CIj <- quantile(theta.b[,j],c(alph/2,1-alph/2))
-      CI[j,] <- c(ests[j],CIj)
-    }
+    # Find confidence intervals for each statistic and make a matrix that has the
+    # estimate in column one and the lower and upper CIs in colums 2 and 3
+    CI <- cbind( ests=ests, t(apply(theta.b, 2, quantile, probs=c(alph/2,1-alph/2) )) )
     CI <- round(CI)
 
   # Find simultaneous confidence intervals for each statistic
@@ -211,9 +209,12 @@ run_boot_gsi_analysis <- function(
         chk <- 0
         for(i in 1:B){
           chkr <- 1
-          for(j in 2:p){
-            if( (theta.b[i,j] < CI[j,2]) | (theta.b[i,j] > CI[j,3]) ) chkr <- chkr * 0
-          } # for over parameters
+
+          # checking that any true values are outside of the CIs. If they are,
+          # then chkr gets set to 0.
+          if( any((theta.b[i,2:p] < CI[2:p,2]) | (theta.b[i,2:p] > CI[2:p,3])) ) {
+            chkr <- chkr * 0
+          }
           chk <- chk + chkr/B
         } # for over bootstrap samples
 
