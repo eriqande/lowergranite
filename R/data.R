@@ -27,6 +27,8 @@
 #'  \item{Sim.List.SH.Stock.Age}{This holds the Sim.List with nsim=2 running run_boot_gsi_analysis with W=SH11.Stock.Age.With.Periods.
 #'  This is primarily used to be able to feed it into \code{\link{gsi_ize_the_Sim.List}} to make sure that function is dealing with 
 #'  the two-period group names like GRROND..BY07.}
+#'  \item{sh.droppers}{A character vector of names that we might wish to drop from \code{SH11.Stock.Age.With.Periods} while running
+#'  the analysis.}
 #' }
 #' @keywords datasets
 NULL

@@ -14,4 +14,5 @@ Suggests:
     testthat
 Depends:
     Hmisc,
-    xlsx
+    xlsx,
+    MCPAN

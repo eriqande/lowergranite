@@ -1,0 +1,69 @@
+---
+title: "Note while developing the package"
+author: Eric C. Anderson
+date: April, 2014
+output: 
+  html_document:
+    toc: true
+    highlight: pygments
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    highlight: pygments
+---
+
+Note that to get this to really be a vignette, I must insert this at the top:
+```
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{quick overview of use/flow of functions}
+-->
+```
+
+## Introduction
+
+I am just using this as a place to store some notes and write down some examples of the use of some of the functions.
+To start off you need the ''lowergranite'' library:
+```{r, results='hide'}
+library(lowergranite)
+```
+
+## Dealing with rare strata
+The joint CI calculations take a beating when there are groups of fish that occur so 
+infrequently in the data that there are iterations of the bootstrapping in which those
+groups never occur in any year.   Kirk and Mike seemed to suggest that you may as well
+just drop those groups from the analysis.  To faciliate that I have added a 
+`drop.these.groups` option to `run_boot_gsi_analysis()`.  You just pass it a character
+vector of the stocks-by-age or stock-by-sex columns you want to drop (the naming has to 
+follow the "double-period" convention of the naming of columns in the data frames).
+
+Let's see how this works.  First, we run an analysis without dropping anyone.  We don't do a long run
+here because I don't want to take too long making this document:
+```{r, cache=TRUE}
+no_drop <- run_boot_gsi_analysis(lg_test_data$SH11.Stock.Age.With.Periods, stock_group_start_col=9, B=100, nsim=50)
+```
+And see what the output looks like, at least for the first four pops
+```{r}
+no_drop[,1:4]
+```
+
+OK, now, let's do the same thing, but drop the pops that we want to.  Note that I have those pops to drop for steelhead (the ones Kirk dropped in the analysis he emailed around on April 14) in the package data:
+```{r}
+lg_test_data$sh.droppers
+```
+So, we run it:
+```{r, cache=TRUE}
+with_drop <- run_boot_gsi_analysis(lg_test_data$SH11.Stock.Age.With.Periods, stock_group_start_col=9, B=100, nsim=50, drop.these.groups=lg_test_data$sh.droppers)
+```
+And the results we get (first five pops) are:
+```{r}
+with_drop[, 1:4]
+```
+
+### Checking that it works with the gsi_sim option
+Let's give this a whirl and see if it works with gsi assignments:
+```{r, eval=FALSE}
+# note that this fails...probably because there is a 0 length vector somewhere 
+with_gsi_no_drop <- run_boot_gsi_analysis(lg_test_data$SH11.Stock.Age.With.Periods, stock_group_start_col=9, B=100, nsim=50, DO_GSI_ON_PROP=T)
+```
+

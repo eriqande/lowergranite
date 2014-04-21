@@ -46,7 +46,11 @@
 #' @param WORK.DIR  The working directory to do this in.  Default = current working directory.
 #' Note that gsi_sim will also be run in this directory.
 #' @param STOCK.DATA.XLSX the path of the file that has the stock data in it used to drive the simulations. This can be NULL, in which
-#' case parameter \code{W} must be specified.  
+#' case parameter \code{W} must be specified. 
+#' @param drop.these.groups  A character vector of the names of the stocks or stock-by-age or stock-by-sex groups that you want
+#' to drop from the analysis (typically because they are at such low numbers that there are bootstrap reps when none of
+#' them occur).  Must follow the convention of column naming in the file.  For example \code{c("UPSALM..BY04", "MFSALM..BY08")}.
+#' If this is non-null then only columns not matching any of the entries in this character vector will be retained.
 #' @param collaps A vector of numbers in 1,...,N telling which weeks should be lumped together into "statistical weeks" from Kirk's code. It looks 
 #' like this gets used in a lot of the bootstrapping functions, but is not a formal parameter of the bootstrapping functions.
 #' @param DO_GSI_ON_PROP if set to TRUE then gsi_sim is used to create assignments that replace the assignments in the variable Prop.  If FALSE
@@ -87,6 +91,7 @@ run_boot_gsi_analysis <- function(
 	DAT.DIR = system.file("data_files", package="lowergranite", mustWork=T),
   WORK.DIR = getwd(),
   STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOPstock.xlsx"),
+  drop.these.groups = NULL,
 	collaps = c(1,1,1,1,1,2,2,2,3,4,5,6,7,8,9,10,10,10,10,11,11,11,11,11,11,11,11),
 	DO_GSI_ON_PROP  = FALSE,
   GSISIM = gsi_simBinaryPath(),
@@ -191,42 +196,27 @@ run_boot_gsi_analysis <- function(
       WeWi <- mApply(WiByWe,collaps,sum)  # This is the wild by week collapsed for origin calculation
       OW <- WeWi %*% pstar  # Bootstrap numbers of wild fish by origin
       theta.b[b,] <- c(sum(WiByWe),OW)
-       } # End of bootstrap loop
+    } # End of bootstrap loop
 
-    # Find confidence intervals for each statistic and make a matrix that has the
-    # estimate in column one and the lower and upper CIs in colums 2 and 3
-    CI <- cbind( ests=ests, t(apply(theta.b, 2, quantile, probs=c(alph/2,1-alph/2) )) )
+    theta.grps <- theta.b[,-1]
+    pp <- ncol(theta.grps)
+  
+    # Find one-at-a-time confidence intervals for each statistic
+    CI <- matrix(numeric(p*2),ncol=2)
+    for  (j in 1:p) {
+      CI[j,] <- quantile(theta.b[,j],c(alph/2,1-alph/2))
+    }
     CI <- round(CI)
-
-  # Find simultaneous confidence intervals for each statistic
-  # But first save the one-at-a-time intervals
-    WOATCI <- CI
-
-      ctr <- 0
-      chk <- 0
-      while(chk < (1-alph)){
-        ctr <- ctr + 1
-        chk <- 0
-        for(i in 1:B){
-          chkr <- 1
-
-          # checking that any true values are outside of the CIs. If they are,
-          # then chkr gets set to 0.
-          if( any((theta.b[i,2:p] < CI[2:p,2]) | (theta.b[i,2:p] > CI[2:p,3])) ) {
-            chkr <- chkr * 0
-          }
-          chk <- chk + chkr/B
-        } # for over bootstrap samples
-
-        CI[,2] <- CI[,2]*(1-0.001) # note that eric removed the unnecessary for loop over j
-        CI[,3] <- CI[,3]*(1+0.001)
-
-      }  # while chk
-
-      CI <- round(CI)
-  #  CIs <- rbind(WOATCI,CI)
-
-    return( rbind(WOATCI,CI) )
+    TotalWildCI <- CI[1,]
+    OneCI <- CI[2:p,]
+  
+    # Find simultaneous rectangular confidence intervals via Mandel/Betensky 2008
+    MBCI <- SCSrank(theta.grps,conf.level=0.9)
+    MBCI <- MBCI$conf.int
+    MBCI <- round(MBCI)
+  
+    return( list(TotalWildCI,OneCI,MBCI) )
+  
   }
   #################### End of bootstrap CI function ##############################
 
@@ -245,6 +235,11 @@ run_boot_gsi_analysis <- function(
   # Read in weekly counts and define the true POPULATION
   if(is.null(W)) {  # get this as the data frame already passed in, or, if not, read it from the xlsx file
     W <- read.xlsx(STOCK.DATA.XLSX,1)
+  }
+  
+  # drop any of the populations in drop.these.groups
+  if(!is.null(drop.these.groups)) {
+    W <- W[!(names(W) %in% drop.these.groups)]
   }
   
   # here we pull the originnames out of the file
@@ -372,14 +367,16 @@ run_boot_gsi_analysis <- function(
   # Put together estimate of total wild and wild by group
     ests <- c(sum(WildByWeek),GroupWild)
 
-  # Call bootstrap routine to find one-at-a-time and simultaneous confidence intervals
+    # Call bootstrap routine to find one-at-a-time and simultaneous confidence intervals
     CIs <- BootLGRrun( Wprop[,2],Pprop )
-
-  # Now put simulation results into rows of an array for later analysis
-    simstf[ss,1:3] <- CIs[1,1:3]
-    for ( jj in 2:p ) simstf[ss,(1+(jj-1)*3):(1+(jj-1)*3+2)] <- CIs[jj,1:3]
-    for ( jj in 2:p ) simstf[ss,(3*p+(jj-2)*2+1):(3*p+(jj-2)*2+2)] <- CIs[p+jj,2:3]
   
+    # Now put simulation results into rows of an array for later analysis
+    TotalWild <- c(ests[1],CIs[[1]])
+    simstf[ss,1:3] <- TotalWild
+    single <- cbind(ests[2:p],CIs[[2]])
+    joint <- CIs[[3]][1:p-1,]
+    for ( jj in 2:p ) simstf[ss,(1+(jj-1)*3):(1+(jj-1)*3+2)] <- single[jj-1,1:3]
+    for ( jj in 2:p ) simstf[ss,(3*p+(jj-2)*2+1):(3*p+(jj-2)*2+2)] <- joint[jj-1,]
   }   # end of simulation loop
 
   # Save simulation results to excel file

@@ -14,7 +14,10 @@ get_pop_for_rg <- function(ru.list, sampled_rgs) {
   res <- rep(NA, length(sampled_rgs))
   tab <- table(sampled_rgs) # count up the occurrences
   tab <- tab[tab>0] # only keep the non-zero ones
-  pops_list <- lapply(names(tab), function(x) sample(ru.list[[x]], tab[x], replace=T))
+  pops_list <- lapply(names(tab), function(x) {
+    if(is.null(ru.list[[x]])) stop(paste("Big problems my friend.", x, "is not a valid reporting unit."))
+    sample(ru.list[[x]], tab[x], replace=T)
+    })
   names(pops_list) <- names(tab)
   for(i in names(tab)) {
     res[sampled_rgs==i] <- pops_list[[i]]
@@ -29,8 +32,12 @@ get_pop_for_rg <- function(ru.list, sampled_rgs) {
 #' @export
 gsi_ize_the_Sim.List <- function(Sim.List, ru.list, GSISIM, BLFILE, Originnames, BL.pops) {
   
-  # simulate a population of origin for each fish
-  prop_with_pops <- lapply(Sim.List, function(x) cbind(x$Prop, gsi_pop = get_pop_for_rg(ru.list, x$Prop$Groop)))  
+  # simulate a population of origin for each fish.  If doing stock-sex of stock-age with the ".."
+  # column naming convention, then x$Prop$Groop will have stock-sex or stock-age, but we want
+  # just plain stock for this section. Ultimately we will want to tweeze it off like this:
+  # sub("\\.\\..*", "", x$Prop$Groop)
+  # but I am going to commit my other stuff first.
+  prop_with_pops <- lapply(Sim.List, function(x) cbind(x$Prop, gsi_pop = get_pop_for_rg(ru.list, sub("\\.\\..*", "", x$Prop$Groop))))  
   
   # now split each component of that on Stratum, and name the result rows of each data from 1:nrow
   # and then order it by the population of origin that will be chosen for each fish, where the ordering

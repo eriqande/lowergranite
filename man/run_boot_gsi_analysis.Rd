@@ -6,12 +6,13 @@
 run_boot_gsi_analysis(W = NULL, stock_group_start_col,
   DAT.DIR = system.file("data_files", package = "lowergranite", mustWork = T),
   WORK.DIR = getwd(), STOCK.DATA.XLSX = file.path(DAT.DIR,
-  "SH11SIMPOPstock.xlsx"), collaps = c(1, 1, 1, 1, 1, 2, 2, 2, 3, 4, 5, 6, 7,
-  8, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11),
-  DO_GSI_ON_PROP = FALSE, GSISIM = gsi_simBinaryPath(), GSI_SEEDS = c(NA,
-  NA), BLFILE = file.path(DAT.DIR, "sthd_base_v3_187.txt"),
-  RUFILE = file.path(DAT.DIR, "sthd_base_v3_rg.txt"), alph = 0.1, B = 5,
-  nsim = 2, console_messages_to = "", reset_booty_seed = 0)
+  "SH11SIMPOPstock.xlsx"), drop.these.groups = NULL, collaps = c(1, 1, 1, 1,
+  1, 2, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11,
+  11), DO_GSI_ON_PROP = FALSE, GSISIM = gsi_simBinaryPath(),
+  GSI_SEEDS = c(NA, NA), BLFILE = file.path(DAT.DIR,
+  "sthd_base_v3_187.txt"), RUFILE = file.path(DAT.DIR, "sthd_base_v3_rg.txt"),
+  alph = 0.1, B = 5, nsim = 2, console_messages_to = "",
+  reset_booty_seed = 0)
 }
 \arguments{
   \item{W}{a data frame that holds all the stock data in it
@@ -49,6 +50,16 @@ run_boot_gsi_analysis(W = NULL, stock_group_start_col,
   stock data in it used to drive the simulations. This can
   be NULL, in which case parameter \code{W} must be
   specified.}
+
+  \item{drop.these.groups}{A character vector of the names
+  of the stocks or stock-by-age or stock-by-sex groups that
+  you want to drop from the analysis (typically because
+  they are at such low numbers that there are bootstrap
+  reps when none of them occur).  Must follow the
+  convention of column naming in the file.  For example
+  \code{c("UPSALM..BY04", "MFSALM..BY08")}. If this is
+  non-null then only columns not matching any of the
+  entries in this character vector will be retained.}
 
   \item{collaps}{A vector of numbers in 1,...,N telling
   which weeks should be lumped together into "statistical
@@ -142,6 +153,6 @@ set.seed(5)
 known_stock_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 10, B = 50, DO_GSI_ON_PROP = F)
 
 # Do a short run using the gsi assignments
-gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 10, B = 50, DO_GSI_ON_PROP = T)
+gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 5, B = 10, DO_GSI_ON_PROP = T)
 }
 
