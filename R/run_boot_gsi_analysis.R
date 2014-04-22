@@ -380,6 +380,7 @@ run_boot_gsi_analysis <- function(
     for ( jj in 2:p ) simstf[ss,(1+(jj-1)*3):(1+(jj-1)*3+2)] <- CIs[jj,1:3]
     for ( jj in 2:p ) simstf[ss,(3*p+(jj-2)*2+1):(3*p+(jj-2)*2+2)] <- CIs[p+jj,2:3]
   
+    cat(ss,"\r")
   }   # end of simulation loop
 
   # Save simulation results to excel file
