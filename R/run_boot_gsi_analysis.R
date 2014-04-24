@@ -1,3 +1,6 @@
+# Main function for the package is here.
+
+
 #' Run the bootstrap analysis, with gsi module if specified in parameters
 #' 
 #' This is basically Kirk's script that eric has wrapped up into a function, and made 
