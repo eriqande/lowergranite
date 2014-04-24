@@ -84,9 +84,7 @@
 #' 
 #' # Do a short run using the gsi assignments
 #' gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 5, B = 10, DO_GSI_ON_PROP = T)
-#'
 #' 
-#'  silly comment 
 run_boot_gsi_analysis <- function(
   W=NULL,
   stock_group_start_col,
