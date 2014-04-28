@@ -93,7 +93,7 @@ run_boot_gsi_analysis <- function(
   stock_group_start_col,
 	DAT.DIR = system.file("data_files", package="lowergranite", mustWork=T),
   WORK.DIR = getwd(),
-  STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOPstock.xlsx"),
+  STOCK.DATA.XLSX = file.path(DAT.DIR, "SH11SIMPOP_StockSex.xlsx"),
   drop.these.groups = NULL,
 	collaps = c(1,1,1,1,1,2,2,2,3,4,5,6,7,8,9,10,10,10,10,11,11,11,11,11,11,11,11),
 	DO_GSI_ON_PROP  = FALSE,
@@ -105,7 +105,9 @@ run_boot_gsi_analysis <- function(
   B = 5,
   nsim = 2,
 	console_messages_to="",
-	reset_booty_seed = 0
+	reset_booty_seed = 0, 
+  GroupMin = 0,
+  Run = "2011 Steelhead Stock"
 ) {
 
 
@@ -202,8 +204,7 @@ run_boot_gsi_analysis <- function(
     } # End of bootstrap loop
 
     theta.grps <- theta.b[,-1]
-    pp <- ncol(theta.grps)
-  
+      
     # Find one-at-a-time confidence intervals for each statistic
     CI <- matrix(numeric(p*2),ncol=2)
     for  (j in 1:p) {
@@ -213,11 +214,22 @@ run_boot_gsi_analysis <- function(
     TotalWildCI <- CI[1,]
     OneCI <- CI[2:p,]
   
-    # Find simultaneous rectangular confidence intervals via Mandel/Betensky 2008
-    MBCI <- SCSrank(theta.grps,conf.level=0.9)
-    MBCI <- MBCI$conf.int
-    MBCI <- round(MBCI)
+  # Apr 26 '14
+  # Before finding joint confidence intervals omit group columns with few members
+  # based on the average of the bootstrap estimates < GroupMin
+  # First set all joint CIs to NA 
+    MBCI <- matrix(NA,nrow = nGrps,ncol=2) 
+    theta.grps <- theta.b[,-1]                   # Delete total wild column
+    mn <- apply(theta.grps,2,mean)
+    keap <- (1:ncol(theta.grps))[mn>GroupMin]
+    if ( length(keap) > 1) {                     # Do joint CI only if 2 or more groups remain
+      theta.grps <- theta.grps[,keap]
   
+  # Find simultaneous rectangular confidence intervals via Mandel/Betensky 2008
+      temp <- SCSrank(theta.grps,conf.level=1-alph)
+      temp <- round(temp$conf.int)
+      MBCI[keap,] <- temp
+    }
     return( list(TotalWildCI,OneCI,MBCI) )
   
   }
@@ -227,14 +239,14 @@ run_boot_gsi_analysis <- function(
   #################### MAIN  #####################################################
 
   # Define basic run parameters
-  Run <- "2011 Steelhead Stock -- weighted, weighted/collapsed"
-
-  
 
   cat("\nStart time: ",date(),"\n", file=console_messages_to, append=T)
   cat("\nThis is a run of ", Run, "\n", file=console_messages_to, append=T)
-  cat("\nParametric bootstrap: B = ",B,"Alpha =",alph,"\n", file=console_messages_to, append=T)
-
+  cat("\nParameter input file is ",STOCK.DATA.XLSX,"\n", file=console_messages_to, append=T)
+  cat("\nParametric bootstrap: B = ",B,"Number Simulations = ",nsim,"\n", file=console_messages_to, append=T)
+  cat("\nAlpha =",alph,"\n", file=console_messages_to, append=T)
+  cat("\nMinimum group size for inclusion in joint CIs is ",GroupMin,"\n", file=console_messages_to, append=T)
+  
   # Read in weekly counts and define the true POPULATION
   if(is.null(W)) {  # get this as the data frame already passed in, or, if not, read it from the xlsx file
     W <- read.xlsx(STOCK.DATA.XLSX,1)
@@ -250,16 +262,8 @@ run_boot_gsi_analysis <- function(
 
   W$SimPop <- round(W$SimPop)
   TrueWild <- sum(W$PopWild)
-  #TrueSex <- cbind(W$Pfemale, 1 - W$Pfemale)
-  #SexNames <- c("Female","Male")
-  #TrueAge <- cbind(W$BY04,W$BY05,W$BY06,W$BY07,W$BY08)
-  #BYnames <- c("BY04","BY05","BY06","BY07","BY08")
-  #nA <- length(BYnames)
-  #nGrps <- nA
-  #nGrps <- 2
   TrueOrigin <- as.matrix(W[Originnames]) 
-  nO <- length(Originnames)
-  nGrps <- nO
+  nGrps <- length(Originnames)
   nw <- length(unique(W$Stratum))
   Probab <- matrix(numeric(nw*nGrps),ncol=nGrps)
   for (i in 1:nw)
@@ -382,17 +386,14 @@ run_boot_gsi_analysis <- function(
     for ( jj in 2:p ) simstf[ss,(3*p+(jj-2)*2+1):(3*p+(jj-2)*2+2)] <- joint[jj-1,]
   }   # end of simulation loop
 
-  # Save simulation results to excel file
+  # Save simulation results in nsim rows
   simstf <- as.data.frame(simstf) # Use this the first time
-  allstf <- as.data.frame(simstf) # Use this the first time 
-  #res <- write.xlsx(allstf,"SH11stock.xlsx",col.names=TRUE,row.names=FALSE,append=FALSE) #  Use this the first time
-
+ 
   #  Summarize the results
-  #allstf <- read.xlsx("SH11OriginDec13.xlsx",1) # Get stored results
-  nS <- nrow(allstf)
+  nS <- nrow(simstf)
 
   # Total wild
-  TotHat <- allstf$Total
+  TotHat <- simstf$Total
   biasTot <- mean(TotHat) - TrueWild
   pctbiasTot <- 100*biasTot/TrueWild
   varnTot<- var(TotHat)
@@ -403,40 +404,63 @@ run_boot_gsi_analysis <- function(
   seTot <- round(sqrt(varnTot),digits=3)
   varnTot <- round(varnTot,digits=3)
   mseTot <- round(mseTot,digits=3)
-  cover <- sum( allstf$TL < TrueWild & allstf$TU > TrueWild )
+  cover <- sum( simstf$TL < TrueWild & simstf$TU > TrueWild )
   coverTot <- round(cover/nS,digits=3)
-  EwidthTot <- round(mean(allstf$TU - allstf$TL),digits=3)
+  EwidthTot <- round(mean(simstf$TU - simstf$TL),digits=3)
 
-  # Origin summary
-  sumrys <- matrix(numeric(12*nGrps),ncol=nGrps)
+  # Group summary
+  # Apr 26 '14 Add a summary row for number of simulation iterations used in joint coverage
+  sumrys <- matrix(numeric(13*nGrps),ncol=nGrps)
 
   srn <- c("Truth        ","Bias         ","PercentBias   ","Variance    ","MeanSquareError  ","RootMSE    ","StandardError  ","CIcover    ","E(width)")
-  srn <- c(srn, "PctHalfCI/Truth", "E(sim_width)", "SimWidth/Width")
+  srn <- c(srn, "PctHalfCI/Truth", "No. iter. in joint CIs", "E(sim_width)", "SimWidth/Width")
   colnames(sumrys) <- Originnames
   rownames(sumrys) <- srn
-  coverit <- matrix(numeric(nS*nGrps),ncol=nGrps)
+  # Apr 26 '14 Get saved joint conf intervals from simstf
+  JointCIs <- as.matrix(simstf[,(3*p+1):(3*p+2*nGrps)])
+  coverit <- matrix(NA,nrow=nS,ncol=nGrps)           # coverit tracks coverage row-by-row and group-by-group
   for (by in 1:nGrps){
     sumrys[1,by] <- TrueGroups[by]
-    GroupsHat <- allstf[,4+(by-1)*3]
-    sumrys[2,by] <- mean(GroupsHat) - TrueGroups[by]
-    sumrys[3,by] <- 100*sumrys[2,by]/TrueGroups[by]
-    sumrys[4,by] <- var(GroupsHat)
-    sumrys[5,by] <- sumrys[4,by] + sumrys[2,by]^2
-    sumrys[6,by] <- sqrt(sumrys[5,by])
-    sumrys[7,by] <- sqrt(sumrys[4,by])
-    sumrys[8,by] <- sum( allstf[,5+(by-1)*3] < TrueGroups[by] & allstf[,6+(by-1)*3]> TrueGroups[by] )
-    sumrys[8,by] <- sumrys[8,by]/nS
-    sumrys[9,by] <- mean( allstf[,6+(by-1)*3] - allstf[,5+(by-1)*3] )
-    sumrys[10,by] <- 100*sumrys[9,by]/2/TrueGroups[by]
-    sumrys[11,by] <- mean( allstf[,3*(nGrps+1)+2+(by-1)*2] - allstf[,3*(nGrps+1)+1+(by-1)*2]) 
-    sumrys[12,by] <- sumrys[11,by]/sumrys[9,by]
-    coverit[,by] <-  allstf[,3*(nGrps+1)+1+(by-1)*2] < TrueGroups[by] & allstf[,3*(nGrps+1)+2+(by-1)*2] > TrueGroups[by]
-  }
+    GroupsHat <- simstf[,4+(by-1)*3]
+    sumrys[2,by] <- mean(GroupsHat) - TrueGroups[by] # Bias
+    sumrys[3,by] <- 100*sumrys[2,by]/TrueGroups[by]  # Percent bias
+    sumrys[4,by] <- var(GroupsHat)                   # Variance  
+    sumrys[5,by] <- sumrys[4,by] + sumrys[2,by]^2    # Mean square error
+    sumrys[6,by] <- sqrt(sumrys[5,by])               # Root mean square error
+    sumrys[7,by] <- sqrt(sumrys[4,by])               # Standard error
+    sumrys[8,by] <- sum( simstf[,5+(by-1)*3] < TrueGroups[by] & simstf[,6+(by-1)*3]> TrueGroups[by] ) 
+    sumrys[8,by] <- sumrys[8,by]/nS                  # One-at-a-time coverage
+    sumrys[9,by] <- mean( simstf[,6+(by-1)*3] - simstf[,5+(by-1)*3] ) # Expected width
+    sumrys[10,by] <- 100*sumrys[9,by]/2/TrueGroups[by] # Half E(CI width) as percent of truth
+    # Apr 26 '14 New calculation of joint confidence using all non-NA data in MBCI
+    #  Get expected joint widths, ratios  and coverage for group 'by' based on joint CIs that are not (NA,NA)
+    Ewidth <- NA  # Set expected joint width to NA initially
+    nrvalid <- 0     # Set the number of simulation iterations used in calculating this by's joint coverage to 0
+    OneJointCI <- JointCIs[,(2*(by-1)+1):(2*(by-1)+2)] # Look at joint CI in all rows of this group 
+    validrows <- (1:nS)[!is.na(OneJointCI[,1])]        # Retain rows that are not (NA,NA)
+    if ( length(validrows)>0 ) { # Check to see if there are any valid joint CIs
+      validCIs <-OneJointCI[validrows,]
+#      cat("\ndim validCIs ",dim(validCIs),"\n", file=console_messages_to, append=T)
+      nrvalid <- nrow(validCIs)
+      Ewidth <-mean(validCIs[,2] - validCIs[,1])
+      coverit[validrows,by] <- validCIs[,1] < TrueGroups[by] & validCIs[,2] > TrueGroups[by]
+# coverit is 1 or 0 if true value is in or out of joint CI for this grp; otherwise, it is NA
+    }
+    sumrys[11,by] <- nrvalid                            # Number of non(NA,NA) pairs in the current group
+    sumrys[12,by] <- Ewidth                         # E(joint CI width)
+    sumrys[13,by] <- sumrys[12,by]/sumrys[9,by]      # Ratio of E(joint CI width) to E(CI width)
+  }   # End of nGrps loop
+  
   jointcover <- rep(1,nS)
-  for (by in 1:nGrps)
-    jointcover <- jointcover & coverit[,by]
-  coverALL <- sum(jointcover)
+  for ( s in 1:nS ) {                          # Now go line by line through coverit
+    veccover <- coverit[s,!is.na(coverit[s,])] # grap the non-NA individual coverages for all groups
+    if ( length(veccover) > 0 ){               # in this row
+      for ( j in 1:length(veccover) ) jointcover[s] <- jointcover[s] * veccover[j]
+    }                                     # jointcover is 1 if ALL joint CIs in this row contain truth; o.w. it is 0
+    else  jointcover[s] <- NA }           # It is NA if there are no valid entries in this row.
+  coverALL <- sum(jointcover,na.rm=TRUE)
   coverALL <- coverALL/nS
+  # End of new code Apr 26 '14
 
   sumrys = round(sumrys,digits=3)
 
