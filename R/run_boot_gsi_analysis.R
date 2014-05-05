@@ -243,6 +243,8 @@ run_boot_gsi_analysis <- function(
   cat("\nStart time: ",date(),"\n", file=console_messages_to, append=T)
   cat("\nThis is a run of ", Run, "\n", file=console_messages_to, append=T)
   cat("\nParameter input file is ",STOCK.DATA.XLSX,"\n", file=console_messages_to, append=T)
+  cat("\nCollaps is: ",paste(collaps, collapse = ","),"\n", file=console_messages_to, append=T)
+  cat("\nstock_group_start_col is  ", stock_group_start_col,"\n", file=console_messages_to, append=T)
   cat("\nParametric bootstrap: B = ",B,"Number Simulations = ",nsim,"\n", file=console_messages_to, append=T)
   cat("\nAlpha =",alph,"\n", file=console_messages_to, append=T)
   cat("\nMinimum group size for inclusion in joint CIs is ",GroupMin,"\n", file=console_messages_to, append=T)

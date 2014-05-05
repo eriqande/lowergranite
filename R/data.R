@@ -3,9 +3,6 @@
 #' This is a list that holds a variety of quantities that are useful to have
 #' to carry out tests of the functions in the package.  Mostly they were
 #' created from the steelhead data.
-#' 
-#'
-#' 
 #' @docType data
 #' @name lg_test_data
 #' @usage data(lg_test_data)
@@ -35,7 +32,8 @@ NULL
 
 
 
-
+#' Parameter settings for long runs of the steelhead data.
+#' 
 #' @docType data
 #' @name steelhead_run_settings
 #' @usage data(steelhead_run_settings)
@@ -47,6 +45,8 @@ NULL
 
 
 
+#' Parameter settings for long runs of the chinook data.
+#' 
 #' @docType data
 #' @name chinook_run_settings
 #' @usage data(chinook_run_settings)

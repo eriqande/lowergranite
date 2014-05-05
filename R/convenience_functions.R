@@ -30,7 +30,7 @@ do_steelhead <- function(STOCK.DATA.XLSX, stock_group_start_col, nsim, B, DO_GSI
     alph = 0.10,
     B = B,
     nsim = nsim,
-    console_messages_to="",
+    console_messages_to="console_output.txt",
     reset_booty_seed = 0
   )
 }
@@ -62,7 +62,7 @@ do_chinook <- function(STOCK.DATA.XLSX, stock_group_start_col, nsim, B, DO_GSI_O
     alph = 0.10,
     B = B,
     nsim = nsim,
-    console_messages_to="",
+    console_messages_to="console_output.txt",
     reset_booty_seed = 0
   )
 }
