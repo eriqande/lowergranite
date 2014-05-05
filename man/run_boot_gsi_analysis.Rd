@@ -149,9 +149,9 @@ to just return it as a data frame or matrix anyway.
 \examples{
 # Do a very short run with known stock of origin:
 set.seed(5)
-known_stock_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 10, B = 50, DO_GSI_ON_PROP = F)
+known_stock_result1 <- run_boot_gsi_analysis(stock_group_start_col = 9, nsim = 10, B = 50, DO_GSI_ON_PROP = F)
 
 # Do a short run using the gsi assignments
-gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 5, B = 10, DO_GSI_ON_PROP = T)
+gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 9, nsim = 5, B = 10, DO_GSI_ON_PROP = T)
 }
 

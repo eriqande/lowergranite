@@ -89,6 +89,23 @@ gsi_ize_the_Sim.List <- function(Sim.List, ru.list, GSISIM, BLFILE, Originnames,
       lapply(1:length(pwp_split_on_stratum[[x]]), 
         function(y) {
           z <- cbind(pwp_split_on_stratum[[x]][[y]], gsi_output_list[[x]][[y]])  # pwp must go first to preserve its rownames
+          
+          # here we deal with attaching the observed sex or age of the fish to the GSI assignment
+          # if the stocknames have a ".." in them brokenNames is an array with 2 rows, the second
+          # of which is the Age (or sex, etc)-determined category of the fish.  We will paste
+          # that only the GSI-inferred group and put that into Groop.GSI. 
+          brokenNames <- simplify2array(strsplit(as.character(z$Groop), split = "\\.\\.")) 
+          
+          if(is.null(dim(brokenNames))) {  # if there is no ".." in the names, just copy across Groop.GSI.As.String and make it a factor using the Originnames
+            z$Groop.GSI <- factor(z$Groop.GSI.As.String, levels=Originnames)
+          } else if(nrow(brokenNames)==2)  { # in this case we did have the ".." naming convention and we need to deal with the observed Ages/Sexes/Etc.
+              z$Groop.GSI <- factor(paste(z$Groop.GSI.As.String, brokenNames[2, ], sep=".."), levels=Originnames)
+          } else {
+            stop("Wrong number of \"..\"\'s in stock names.  Should be at most one \"..\" per name.")
+          }
+
+          
+          
           z <- z[as.character(1:nrow(z)), ]  # put it back into its original order
           z$Groop.Truth <- z$Groop  # add a column to preserve the truth
           z$Groop <- z$Groop.GSI   # set Groop to what you got with GSI, to be used in the downstream estimates
@@ -144,12 +161,16 @@ extract_multi_fix_sim_to_df <- function(gsi.big.out, ru.list, Originnames) {
   # Sim.List
   rg_by_gsi <- factor(names(ru.list)[apply(sapply(ru.list, function(x) rowSums(cbind(outlines[,x]))), 1, which.max)], levels=Originnames)
   
+  # here we see about making the same thing, but we just store them as strings, as we will have
+  # to muck with them later for stock-sex and stock-age...
+  rg_strings_by_gsi <- names(ru.list)[apply(sapply(ru.list, function(x) rowSums(cbind(outlines[,x]))), 1, which.max)]
+  
   # get the Simulation replicate and the Stratum for each 
   sr_and_strat <- matrix(as.numeric(unlist(strsplit(MMF.id, "_"))), byrow=T, ncol=2)
   colnames(sr_and_strat) <- c("SimRep.GSI", "Stratum.GSI")
   
   # and now send it back as a data frame
-  data.frame(sr_and_strat, Groop.GSI=rg_by_gsi, Pop.Simmed.From=FromPop)
+  data.frame(sr_and_strat, Groop.GSI=rg_by_gsi, Pop.Simmed.From=FromPop, Groop.GSI.As.String=rg_strings_by_gsi)
 }
 
 
@@ -184,4 +205,32 @@ make_super_informo_data <- function(BLFILE, outfile="super_informo_baseline.txt"
       write.table(mat, quote=F, row.names=T, col.names=F, sep=" ", file=outfile, append=T)
   })
   
+}
+
+
+
+#' Test that all STOCK..CHARACTERISTIC are present.
+#' 
+#' When using the ".." notation to define subroups of stocks (for example stock-by-sex or
+#' stock-by-age) it is required that any subgroup designations be applied to all stocks.
+#' This function just checks that this is the case.  If not, it throws an error.  Of course, if none of the
+#' stock group designations have a ".." in them, then there is no problem.
+#' @param Onames  the names of the different origin groups.  This will be Originnames, typically.
+#' @export
+check_subgroup_level_completeness <- function(Onames) {
+  if(any(grepl("\\.\\.", Onames))) {
+    no_dots <- Onames[!grepl("\\.\\.", Onames)]  # check if there are any missing the two dots
+    if(length(no_dots) > 0) stop(paste("Missing double dots in stock-name:", no_dots, "\n  "))
+    
+    df <- as.data.frame(matrix(unlist(strsplit(Onames, "\\.\\.")), ncol=2, byrow=T))
+    df$V1 <- factor(df$V1, levels=unique(df$V1)) # put them in the right order
+    df$V2 <- factor(df$V2, levels=unique(df$V2)) # put them in the right order
+    
+    name_counts <- as.data.frame(table(df$V1, df$V2))
+    missing <- name_counts[name_counts$Freq==0, ]
+    if(nrow(missing) > 0) {
+      miss_str <- paste(missing$Var1, missing$Var2, sep="..", collapse="  ")
+      stop("Missing certain stock-by-subgroup levels: ", miss_str)
+    }
+  }
 }

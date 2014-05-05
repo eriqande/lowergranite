@@ -83,10 +83,10 @@
 #' @examples 
 #' # Do a very short run with known stock of origin:
 #' set.seed(5)
-#' known_stock_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 10, B = 50, DO_GSI_ON_PROP = F)
+#' known_stock_result1 <- run_boot_gsi_analysis(stock_group_start_col = 9, nsim = 10, B = 50, DO_GSI_ON_PROP = F)
 #' 
 #' # Do a short run using the gsi assignments
-#' gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 14, nsim = 5, B = 10, DO_GSI_ON_PROP = T)
+#' gsi_result1 <- run_boot_gsi_analysis(stock_group_start_col = 9, nsim = 5, B = 10, DO_GSI_ON_PROP = T)
 #' 
 run_boot_gsi_analysis <- function(
   W=NULL,
@@ -239,7 +239,7 @@ run_boot_gsi_analysis <- function(
   #################### MAIN  #####################################################
 
   # Define basic run parameters
-
+  start_time = date()
   cat("\nStart time: ",date(),"\n", file=console_messages_to, append=T)
   cat("\nThis is a run of ", Run, "\n", file=console_messages_to, append=T)
   cat("\nParameter input file is ",STOCK.DATA.XLSX,"\n", file=console_messages_to, append=T)
@@ -259,6 +259,10 @@ run_boot_gsi_analysis <- function(
   
   # here we pull the originnames out of the file
   Originnames <- names(W)[stock_group_start_col:ncol(W)]
+  
+  # and we check to make sure that the subgroup designations for any of them 
+  # are applied to all of them if using the double dot way of designating those
+  check_subgroup_level_completeness(Originnames)
 
   W$SimPop <- round(W$SimPop)
   TrueWild <- sum(W$PopWild)
@@ -438,9 +442,14 @@ run_boot_gsi_analysis <- function(
     nrvalid <- 0     # Set the number of simulation iterations used in calculating this by's joint coverage to 0
     OneJointCI <- JointCIs[,(2*(by-1)+1):(2*(by-1)+2)] # Look at joint CI in all rows of this group 
     validrows <- (1:nS)[!is.na(OneJointCI[,1])]        # Retain rows that are not (NA,NA)
-    if ( length(validrows)>0 ) { # Check to see if there are any valid joint CIs
+    if ( length(validrows)>1 ) { # Check to see if there are any valid joint CIs 
+                                 # NOTE THAT ECA changed this to be > 1 rather than > 0, because
+                                 # if there is only one valid row, then validCIs gets returned as a vector, not
+                                 # a matrix, and bad things happen.  So, we require at least two rows that are not
+                                 # NA to make an assessment of the jointCI.
+
       validCIs <-OneJointCI[validrows,]
-#      cat("\ndim validCIs ",dim(validCIs),"\n", file=console_messages_to, append=T)
+    #  cat("\ndim validCIs ",dim(validCIs),"\n", file=console_messages_to, append=T)
       nrvalid <- nrow(validCIs)
       Ewidth <-mean(validCIs[,2] - validCIs[,1])
       coverit[validrows,by] <- validCIs[,1] < TrueGroups[by] & validCIs[,2] > TrueGroups[by]
@@ -476,14 +485,30 @@ run_boot_gsi_analysis <- function(
   cat("\nCI coverage            ",coverTot, file=console_messages_to, append=T)
   cat("\nE(widthTotalWild)      ",EwidthTot, file=console_messages_to, append=T)
   cat("\nJoint CI coverage     ",coverALL,"\n", file=console_messages_to, append=T)
-  # print(sumrys)  # eric commented this out because the function now returns this
   cat("\nEnd time: ",date(),"\n", file=console_messages_to, append=T)
+
+  printed_output <- list(
+    Start_time = start_time,
+    Number_of_simulations = nS,
+    PROPERTY = "Total Wild",
+    Population_Truth = TrueWild,
+    Bias = biasTot,
+    Percent_Bias = pctbiasTot,
+    Variance = varnTot,
+    Mean_Square_Error = mseTot,
+    Root_Mean_Square_Error = rmseTot,
+    Standard_Error = seTot,
+    CI_coverage = coverTot,
+    Expected_widthTotalWild = EwidthTot,
+    Joint_CI_coverage = coverALL,
+    End_time = date()
+  )
 
   write.csv(sumrys, file = "summary.csv",row.names=TRUE)
 
 
   ######################## End of MAIN ##########################################
-  return(sumrys)
+  return(list(sumrys = sumrys, simstf = simstf, printed_output = printed_output))
 
 }
 

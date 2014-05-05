@@ -1,3 +1,4 @@
+export(check_subgroup_level_completeness)
 export(do_chinook_stock)
 export(do_steelhead_stock)
 export(extract_multi_fix_sim_to_df)
