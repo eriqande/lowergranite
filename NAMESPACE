@@ -1,6 +1,6 @@
 export(check_subgroup_level_completeness)
-export(do_chinook_stock)
-export(do_steelhead_stock)
+export(do_chinook)
+export(do_steelhead)
 export(extract_multi_fix_sim_to_df)
 export(get_pop_for_rg)
 export(gsi_ize_the_Sim.List)
