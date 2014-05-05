@@ -32,3 +32,28 @@
 #' }
 #' @keywords datasets
 NULL
+
+
+
+
+#' @docType data
+#' @name steelhead_run_settings
+#' @usage data(steelhead_run_settings)
+#' @format This is a data frame with 6 rows and 5 columns.  Each row contains a set of 
+#' parameters to be passed to do_steelhead().  It's just there to make it easy to 
+#' set up some runs in parallel.
+#' @keywords datasets
+NULL
+
+
+
+#' @docType data
+#' @name chinook_run_settings
+#' @usage data(chinook_run_settings)
+#' @format This is a data frame with 6 rows and 5 columns.  Each row contains a set of 
+#' parameters to be passed to do_chinook().  It's just there to make it easy to 
+#' set up some runs in parallel.
+#' @keywords datasets
+NULL
+
+
