@@ -7,11 +7,10 @@ make_super_informo_data(BLFILE, outfile = "super_informo_baseline.txt",
   nperpop = 100)
 }
 \arguments{
-  \item{BLFILE}{a baseline file in gsi_sim format that has
-  all the population names that you want in the order that
-  you want them}
+\item{BLFILE}{a baseline file in gsi_sim format that has all the population names
+that you want in the order that you want them}
 
-  \item{outfile}{path to where you want the output written}
+\item{outfile}{path to where you want the output written}
 }
 \description{
 Output is written as a gsi_sim file.

@@ -6,7 +6,7 @@
 quoteProtect(x)
 }
 \arguments{
-  \item{x}{a file path (or a vector of paths)}
+\item{x}{a file path (or a vector of paths)}
 }
 \description{
 The system path on Windows has spaces in it which causes problems with

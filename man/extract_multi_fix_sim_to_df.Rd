@@ -6,8 +6,7 @@
 extract_multi_fix_sim_to_df(gsi.big.out, ru.list, Originnames)
 }
 \arguments{
-  \item{gsi.big.out}{A character vector of gsi_sim's
-  standard output.}
+\item{gsi.big.out}{A character vector of gsi_sim's standard output.}
 }
 \description{
 takes a character vector of gsi_sim output from readLines, extracts the multi-fix-mix
