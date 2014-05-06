@@ -16,8 +16,8 @@ chs$Type <- "chinook"
 ps <- rbind(shs, chs)
 
 # this is just here for testing
-ps$nsim <- 3
-ps$B <- 2
+# ps$nsim <- 3
+# ps$B <- 2
 
 
 
@@ -49,7 +49,7 @@ lapply(1:nrow(ps), function(x) stage_a_run(ps[x, ]))
 # then on the unix command line in out_path do:
 #       for i in *; do echo "cd $i; R CMD BATCH rscript.R;" ; done > for_para.txt 
 # then you can launch it all with gnu parallel like this:
-#       parallel -P 2 < for_para.txt
+#       parallel -P 12 < for_para.txt
 #
 
 
