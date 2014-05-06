@@ -5,10 +5,9 @@
 slurp_all_results(Dirs)
 }
 \arguments{
-  \item{Dirs}{a character vector of directories to slurp
-  results from. Ideally you will just give the basenae of
-  them all as these will become the names of the output
-  list.}
+\item{Dirs}{a character vector of directories to slurp results from. Ideally
+you will just give the basenae of them all as these will become the names
+of the output list.}
 }
 \description{
 Read all the results from all the runs with output in Dirs into a named list

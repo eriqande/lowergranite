@@ -5,11 +5,9 @@
 get_pop_for_rg(ru.list, sampled_rgs)
 }
 \arguments{
-  \item{ru.list}{list whose names are reporting units and
-  components are vectors of population names}
+\item{ru.list}{list whose names are reporting units and components are vectors of population names}
 
-  \item{sampled_rgs}{a vector of reporting units (denoting
-  the stock of each fish for example)}
+\item{sampled_rgs}{a vector of reporting units (denoting the stock of each fish for example)}
 }
 \description{
 pass this a vector of reporting group names and a list of the

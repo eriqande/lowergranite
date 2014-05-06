@@ -5,8 +5,7 @@
 check_subgroup_level_completeness(Onames)
 }
 \arguments{
-  \item{Onames}{the names of the different origin groups.
-  This will be Originnames, typically.}
+\item{Onames}{the names of the different origin groups.  This will be Originnames, typically.}
 }
 \description{
 When using the ".." notation to define subroups of stocks (for example stock-by-sex or
