@@ -1,0 +1,138 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+%\usepackage{endfloat}
+%\usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{amssymb}
+\usepackage{caption}
+
+\begin{document}
+
+\begin{center}
+\LARGE 
+Simulation Results
+\end{center}
+
+\begin{table} % [h]
+\caption{Bias and confidence interval coverage from simulations \\
+for sex, brood year, and genetic stock}
+\label{table:SHout1}
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{  c c c c c c c c c   }
+\hline
+&&&\multicolumn{3}{c}{Simulation scenarios}&&& \\ 	
+&		\multicolumn{2}{c}{Pooled} 	&\multicolumn{2}{c}{Pooled}&	\multicolumn{2}{c}{Stratified}	&\multicolumn{2}{c}{Stratified}  \\ 
+&		\multicolumn{2}{c}{Parametric} 	&\multicolumn{2}{c} {Nonparametric}&	\multicolumn{2}{c}{Parametric} 	&\multicolumn{2}{c}{Nonparametric}  \\ \cline{2-9}
+Variable/	&Bias &	CI &	Bias &	CI &	Bias &	CI &	Bias &	CI  \\
+group	&(\%)&	 Cover&	 (\%)&	 Cover&	 (\%)&	 Cover&	 (\%)&	 Cover \\
+\multicolumn{1}{l}{Sex}&&&&&&&&	 \\ 						
+	Female&	-0.21&	0.900&	-0.18&	0.916&	0.25&	0.906&	0.20&	0.906 \\ 
+	Male&	0.52&	0.882&	0.15&	0.876&	-0.74&	0.914&	-0.54&	0.868 \\
+\multicolumn{1}{l}{Brood year}&&&&&&&& \\								
+	2004&	5.28&	0.898&	6.09&	0.874&	2.59&	0.874&	2.61&	0.882 \\
+	2005&	1.84&	0.866&	1.59&	0.880&	0.39&	0.896&	0.44&	0.898 \\
+	2006&	0.04&	0.892&	0.14&	0.890&	0.47&	0.890&	0.36&	0.896 \\
+	2007&	-1.89&	0.830&	-1.93&	0.864&	-1.43&	0.870&	-1.10&	0.890 \\
+	2008&	-3.61&	0.884&	-4.25&	0.876&	-0.57&	0.904&	-1.84&	0.872 \\
+\multicolumn{1}{l}{Genetic stock}&&&&&&&& \\								
+	UPS&	-2.51&	0.854&	-2.17&	0.876&	0.59&	0.914&	1.39&	0.890 \\
+	MFS&	-5.84&	0.768&	-5.66&	0.774&	1.08&	0.894&	2.20&	0.896 \\
+	SFS&	-1.71&	0.898&	-2.20&	0.890&	0.68&	0.902&	1.07&	0.906 \\
+	LOS&	1.21&	0.918&	1.19&	0.898&	1.76&	0.876&	1.21&	0.876 \\ 
+	UPC&	7.63&	0.704&	7.68&	0.718&	-0.99&	0.896&	-0.77&	0.908 \\
+	SFC&	6.99&	0.742&	6.98&	0.718&	-0.35&	0.912&	-0.36&	0.902 \\
+	LOC&	0.81&	0.884&	1.36&	0.884&	-0.41&	0.896&	1.31&	0.912 \\
+	IMN&	2.23&	0.886&	2.35&	0.918&	2.62&	0.888&	1.85&	0.864 \\ 
+	GRR&	-2.04&	0.850&	-2.10&	0.860&	-1.73&	0.888&	-1.66&	0.904 \\
+	LSN&	-1.11&	0.874&	-1.36&	0.864&	-0.69&	0.906&	-0.92&	0.884 \\ \hline		 
+\end{tabular}
+}
+\end{table}		
+
+\begin{table} % [h]
+\caption{Bias and confidence interval coverage from simulations \\
+for genetic stock and brood year }
+\label{table:SHout2}
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{  c c c c c c c c c   }
+\hline
+&&&\multicolumn{3}{c}{Simulation scenarios}&&& \\ 	
+&		\multicolumn{2}{c}{Pooled} 	&\multicolumn{2}{c}{Pooled}&	\multicolumn{2}{c}{Stratified}	&\multicolumn{2}{c}{Stratified}  \\ 
+&		\multicolumn{2}{c}{Parametric} 	&\multicolumn{2}{c} {Nonparametric}&	\multicolumn{2}{c}{Parametric} 	&\multicolumn{2}{c}{Nonparametric}  \\ \cline{2-9}
+\multicolumn{1}{l}{Stock/Age}	&Bias &	CI &	Bias &	CI &	Bias &	CI &	Bias &	CI  \\
+	&(\%)&	 Cover&	 (\%)&	 Cover&	 (\%)&	 Cover&	 (\%)&	 Cover \\
+UPS BY2004&	2.15&	0.822&	7.61&	0.874&	2.64&	0.876&	3.47&	0.874 \\
+MFS BY2004&	-1.80&	0.842&	2.89&	0.882&	2.57&	0.856&	6.23&	0.868 \\
+SFS BY2004&	3.96&	0.918&	2.21&	0.920&	-0.09&	0.852&	5.35&	0.860 \\
+LOS BY2004&	10.74&	0.804&	6.99&	0.826&	2.18&	0.828&	1.82&	0.802 \\
+UPC BY2004&		12.53&	0.870&	12.83&	0.876&	3.62&	0.866&	1.89&	0.872 \\
+SFC BY2004&	10.35&	0.834&	10.90&	0.860&	3.16&	0.878&	-2.12&	0.858 \\
+LOC BY2004&	8.23&	0.828&	8.19&	0.780&	1.44&	0.862&	10.83&	0.888 \\
+IMN BY2004&	11.75&	0.884&	8.12&	0.878&	0.67&	0.902&	4.10&	0.850 \\
+GRR BY2004&	7.12&	0.880&	6.14&	0.858&	3.74&	0.872&	2.96&	0.904 \\
+LSN BY2004&	5.46&	0.894&	4.80&	0.886&	2.59&	0.864&	2.08&	0.872 \\
+UPS BY2005&	-0.15&	0.904&	-0.11&	0.900&	1.44&	0.888&	2.12&	0.894 \\
+MFS BY2004&	-3.68&	0.868&	-2.72&	0.876&	3.77&	0.854&	1.12&	0.874 \\
+SFS BY2005&	0.39&	0.894&	0.87&	0.910&	0.77&	0.862&	2.18&	0.900 \\
+LOS BY2005&	1.33&	0.906&	2.84&	0.870&	0.07&	0.880&	1.57&	0.906 \\
+UPC BY2005&	7.96&	0.868&	8.32&	0.860&	-1.29&	0.888&	-0.69&	0.894 \\
+SFC BY2005&	7.38&	0.848&	8.74&	0.850&	0.18&	0.892&	-0.59&	0.888 \\
+LOC BY2005&	2.05&	0.876&	3.50&	0.876&	1.09&	0.914&	-0.22&	0.864 \\
+IMN BY2005&	5.69&	0.876&	4.60&	0.866&	3.41&	0.888&	0.55&	0.884 \\
+GRR BY2005&	-0.43&	0.892&	-0.22&	0.914&	-2.30&	0.854&	-2.24&	0.888 \\
+LSN BY2005&	-0.40&	0.878&	0.02&	0.894&	-0.26&	0.896&	0.35&	0.904 \\
+UPS BY2006&	-2.54&	0.880&	-2.25&	0.868&	0.82&	0.902&	1.20&	0.876 \\
+MFS BY2006&	-5.92&	0.860&	-6.50&	0.804&	1.93&	0.908&	1.62&	0.896 \\
+SFS BY2006&	-3.20&	0.848&	-3.11&	0.874&	1.10&	0.908&	0.34&	0.906 \\
+LOS BY2006&	1.44&	0.886&	-0.32&	0.912&	1.61&	0.896&	1.66&	0.908 \\
+UPC BY2006&	7.78&	0.804&	9.28&	0.774&	-0.93&	0.892&	0.55&	0.868 \\
+SFC BY2006&	7.36&	0.816&	7.11&	0.830&	0.65&	0.898&	-0.17&	0.908 \\
+LOC BY2006&	2.38&	0.876&	0.90&	0.900&	0.72&	0.908&	0.69&	0.898 \\
+IMN BY2006&	2.60&	0.894&	2.34&	0.886&	1.64&	0.918&	1.66&	0.908 \\
+GRR BY2006&	-1.90&	0.884&	-2.49&	0.854&	0.00&	0.894&	-0.98&	0.912 \\
+LSN BY2006&	-0.93&	0.884&	-0.88&	0.890&	0.15&	0.902&	-0.11&	0.918 \\
+\end{tabular}
+}
+\end{table}	
+
+\begin{table} % [h]
+\caption{Stock/age continued }
+\label{table:SHout3}
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{  c c c c c c c c c   }
+\hline
+&&&\multicolumn{3}{c}{Simulation scenarios}&&& \\ 	
+&		\multicolumn{2}{c}{Pooled} 	&\multicolumn{2}{c}{Pooled}&	\multicolumn{2}{c}{Stratified}	&\multicolumn{2}{c}{Stratified}  \\ 
+&		\multicolumn{2}{c}{Parametric} 	&\multicolumn{2}{c} {Nonparametric}&	\multicolumn{2}{c}{Parametric} 	&\multicolumn{2}{c}{Nonparametric}  \\ \cline{2-9}
+\multicolumn{1}{l}{Stock/Age}	&Bias &	CI &	Bias &	CI &	Bias &	CI &	Bias &	CI  \\
+	&(\%)&	 Cover&	 (\%)&	 Cover&	 (\%)&	 Cover&	 (\%)&	 Cover \\
+
+UPS BY2007&	2.29&	0.900&	2.24&	0.910&	0.66&	0.892&	0.21&	0.896 \\
+MFS BY2007&	-4.96&	0.854&	-5.32&	0.852&	2.32&	0.882&	-3.21&	0.890 \\
+SFS BY2007&	-3.67&	0.866&	-3.66&	0.842&	-0.75&	0.896&	-2.54&	0.880 \\
+LOS BY2007&	-3.47&	0.860&	-4.23&	0.868&	0.01&	0.894&	0.38&	0.900 \\
+UPC BY2007&	-7.45&	0.860&	-7.91&	0.824&	-1.68&	0.890&	0.50&	0.884 \\
+SFC BY2007&	-3.73&	0.862&	-4.64&	0.850&	-2.54&	0.876&	-0.05&	0.886 \\
+LOC BY2007&	0.40&	0.864&	1.53&	0.890&	-2.33&	0.888&	0.69&	0.922 \\
+IMN BY2007&	5.99&	0.886&	5.85&	0.858&	1.28&	0.898&	-2.46&	0.890 \\
+GRR BY2007&	5.95&	0.866&	4.86&	0.912&	-3.54&	0.890&	-2.25&	0.872 \\
+LSN BY2007&	-0.27&	0.872&	-2.11&	0.888&	-2.17&	0.858&	-0.99&	0.880 \\
+UPS BY2008&	-9.80&	0.818&	-7.82&	0.844&	-1.93&	0.872&	-0.72&	0.888 \\
+MFS BY2008&	-9.25&	0.844&	-9.34&	0.848&	-2.96&	0.856&	-1.23&	0.854 \\
+SFS BY2008&	-7.69&	0.880&	-6.51&	0.906&	-0.97&	0.818&	-0.83&	0.812 \\
+LOS BY2008&	-3.76&	0.802&	-4.70&	0.828&	2.64&	0.830&	-1.53&	0.816 \\
+UPC BY2008&	7.93&	0.846&	10.71&	0.888&	2.29&	0.842&	4.86&	0.856 \\
+SFC BY2008&	7.38&	0.890&	6.61&	0.850&	-4.00&	0.866&	-1.15&	0.854 \\
+LOC BY2008&	-3.18&	0.830&	-3.26&	0.862&	-4.14&	0.830&	-0.26&	0.828 \\
+GRR BY2008&	-5.50&	0.850&	-7.02&	0.838&	-6.19&	0.878&	-4.73&	0.878 \\
+LSN BY2008&	-5.49&	0.862&	-4.42&	0.840&	-2.67&	0.886&	-1.86&	0.884 \\ \hline
+\end{tabular}
+}
+\end{table}	
+
+\end{document}
+
