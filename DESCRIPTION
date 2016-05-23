@@ -16,3 +16,4 @@ Depends:
     Hmisc,
     xlsx,
     MCPAN
+RoxygenNote: 5.0.1
